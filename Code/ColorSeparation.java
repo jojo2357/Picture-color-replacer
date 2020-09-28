@@ -5,12 +5,16 @@ import javax.imageio.*;
 
 public class ColorSeparation {
     /*
-     * args: 0: first name (input, include extension) 1: last name (output, do not
-     * include extension here. put in next arg) 2: output file image format (idk
-     * what is allowed, but png i have tested and it works. do not include . as in
-     * "png" not ".png" 3: r1 RGB1 = color to replace 4: g1 5: b1 6: r2 RGB2 = color
-     * to replace it with 7: g2 8: b2 9: opacity of dest (optional; setting this to
-     * 0 will make all replaced pixels transparent
+  args: 0: first name (input, include extension) 
+	1: last name (output, do not include extension here. put in next arg) 
+	2: output file image format (idk what is allowed, but png i have tested and it works. do not include . as in "png" not ".png" 
+	3: r1 RGB1 = color to replace 
+	4: g1 
+	5: b1 
+	6: r2 RGB2 = color to replace it with 
+	7: g2 
+	8: b2 
+	9: opacity of dest (optional; setting this to 0 will make all replaced pixels transparent)
      */
     public static void main(String args[]) throws IOException {
         runTheMainThing(args);
