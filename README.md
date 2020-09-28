@@ -3,11 +3,13 @@
 
 # Notes:
 * Converting between files IS supported, although i havent tested every single possiblity, but do let me know what conversions are not applicable.
-* If you just want to convert file type, make all the RGB numbers the same and do not put an alpha value. Make the 
+* If you just want to convert file type, make all the RGB numbers the same and do not put an alpha value. 
+* Make sure when converting between image formats that you remember if the destination supports transparency (ie. a png -> jpg will only work if the png has no transparency because jpg does not support transparency)
 
 # Contents: 
 * stand alone image converter (ColorSeparation.java)
 * bulk image converter base (RecolorerManager.java)
+* two demo images. One for color replacement, the other for png -> jpg demo (one has transparency and will not work, the other does not have transparency and will work)
 
 # Demo Directions:
 

@@ -26,7 +26,7 @@ public class ColorSeparation {
                 Integer.parseInt(args[agnum++]), Integer.parseInt(args[agnum++]),
                 Integer.parseInt(args[agnum++]), Integer.parseInt(args[agnum++]),
                 args.length > 9? Integer.parseInt(args[9]) : 255);
-	System.out.println(args[0] + " completed");
+	System.out.println(args[1] + "." + args[2] + " done");
     }
 
     public static void separate(String startingName, String endingName, String outFormat, int r1, int g1, int b1, 
