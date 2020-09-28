@@ -13,10 +13,10 @@ public class ColorSeparation {
      * 0 will make all replaced pixels transparent
      */
     public static void main(String args[]) throws IOException {
-	runTheMainThing(args);
+        runTheMainThing(args);
     }
 
-    public static void runTheMainThing(String args[]) throws IOException{
+    public static void runTheMainThing(String args[]) throws IOException {
         assert (args.length > 8);
         if (args[1].indexOf(".") == args[1].length() - 4)
             throw new IllegalArgumentException(
@@ -32,25 +32,34 @@ public class ColorSeparation {
     public static void separate(String startingName, String endingName, String outFormat, int r1, int g1, int b1,
             int r2, int g2, int b2, int a2) throws IOException {
         BufferedImage image = ImageIO.read(new File(startingName));
-	if (outFormat.equals("jpg")){
-		BufferedImage newBufferedImage = new BufferedImage(image.getWidth(), image.getHeight(), image.TYPE_INT_RGB);
-	  	newBufferedImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
-        	for (int col = 0; col < image.getWidth(); col++) {
-        	    for (int row = 0; row < image.getHeight(); row++) {
-        	        if (newBufferedImage.getRGB(col, row) == (new Color(r1, g1, b1)).getRGB())
-        	            newBufferedImage.setRGB(col, row, a2 == 255 ? (new Color(r2, g2, b2)).getRGB() : (new Color(r2, g2, b2, a2)).getRGB());
-        	    }
-        	}
-		ImageIO.write(newBufferedImage, "jpg", new File(endingName + "." + outFormat));
-		return;
-	}
-        for (int col = 0; col < image.getWidth(); col++) {
-            for (int row = 0; row < image.getHeight(); row++) {
-                if (image.getRGB(col, row) == (new Color(r1, g1, b1)).getRGB())
-                    image.setRGB(col, row, a2 == 255 ? (new Color(r2, g2, b2)).getRGB() : (new Color(r2, g2, b2, a2)).getRGB());
-            }
+        if (outFormat.equals("jpg")) {// there may be other formats that require this.
+            doWithoutAlpha(endingName, outFormat, r1, g1, b1, r2, g2, b2, a2, image);
+            // TODO: add a way to custom background when removing alpha
+            return;
         }
+        image = alterImage(image, new Color(r1, g1, b1), new Color(r2, g2, b2, a2));
         File saveAs = new File(endingName + "." + outFormat);
         ImageIO.write(image, outFormat, saveAs);
+    }
+
+    // Literally same thing, but this time we are going to load the image in
+    // 24-bit/pixel format
+    public static void doWithoutAlpha(String endingName, String outFormat, int r1, int g1, int b1, int r2, int g2,
+            int b2, int a2, BufferedImage image) throws IOException {
+        BufferedImage newBufferedImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+        newBufferedImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
+        newBufferedImage = alterImage(newBufferedImage, new Color(r1, g1, b1), new Color(r2, g2, b2));
+        ImageIO.write(newBufferedImage, "jpg", new File(endingName + "." + outFormat));
+    }
+
+    public static BufferedImage alterImage(BufferedImage image, Color test, Color replace) {
+        for (int col = 0; col < image.getWidth(); col++) {
+            for (int row = 0; row < image.getHeight(); row++) {
+                if (image.getRGB(col, row) == (test.getRGB()))
+                    image.setRGB(col, row, replace.getRGB());
+            }
+        }
+        return image;
     }
 }
