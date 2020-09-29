@@ -35,7 +35,9 @@ public class ColorSeparation {
 
     public static void separate(String startingName, String endingName, String outFormat, int r1, int g1, int b1,
             int r2, int g2, int b2, int a2) throws IOException {
-        BufferedImage image = ImageIO.read(new File(startingName));
+        BufferedImage first = ImageIO.read(new File(startingName));
+	BufferedImage image = new BufferedImage(first.getWidth(), first.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+	image.getGraphics().drawImage(first, 0, 0, null);
         if (outFormat.equals("jpg")) {// there may be other formats that require this.
             doWithoutAlpha(endingName, outFormat, r1, g1, b1, r2, g2, b2, a2, image);
             // TODO: add a way to custom background when removing alpha
@@ -48,6 +50,7 @@ public class ColorSeparation {
 
     // Literally same thing, but this time we are going to load the image in
     // 24-bit/pixel format
+    // may not work
     public static void doWithoutAlpha(String endingName, String outFormat, int r1, int g1, int b1, int r2, int g2,
             int b2, int a2, BufferedImage image) throws IOException {
         BufferedImage newBufferedImage = new BufferedImage(image.getWidth(), image.getHeight(),
@@ -60,8 +63,9 @@ public class ColorSeparation {
     public static BufferedImage alterImage(BufferedImage image, Color test, Color replace) {
         for (int col = 0; col < image.getWidth(); col++) {
             for (int row = 0; row < image.getHeight(); row++) {
-                if (image.getRGB(col, row) == (test.getRGB()))
+                if (image.getRGB(col, row) == (test.getRGB())){
                     image.setRGB(col, row, replace.getRGB());
+                }
             }
         }
         return image;
