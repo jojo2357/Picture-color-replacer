@@ -1,0 +1,24 @@
+{
+  "build": "release",
+  "mode": "zip",
+  "selectedAddons": [],
+  "platform": [
+    "linux",
+    "linux-arm64",
+    "linux-arm32",
+    "macos",
+    "windows",
+    "windows-x86"
+  ],
+  "descriptions": true,
+  "compact": false,
+  "hardcoded": false,
+  "javadoc": false,
+  "includeJSON": true,
+  "source": false,
+  "osgi": false,
+  "language": "groovy",
+  "preset": "minimal-opengl",
+  "version": "3.2.3",
+  "versionLatest": "3.2.3"
+}

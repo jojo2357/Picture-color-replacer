@@ -1,7 +1,11 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
-import javax.imageio.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 
 public class ColorSeparation {
     /*
@@ -16,11 +20,15 @@ public class ColorSeparation {
 	8: b2 
 	9: opacity of dest (optional; setting this to 0 will make all replaced pixels transparent)
      */
-    public static void main(String args[]) throws IOException {
-        runTheMainThing(args);
+    public static void main(String[] args) throws IOException {
+        //runTheMainThing(args);
+        HashMap<Color, Color> replaces = new HashMap<>();
+        replaces.put(new Color(187, 188, 178), new Color(0, 255, 0));
+        System.out.println(new File("assets/block/black_bowl.png").getAbsolutePath());
+        doTheThing("assets/block/black_bowl.png", "generated/black_white_bowl.png", replaces);
     }
 
-    public static void runTheMainThing(String args[]) throws IOException {
+    public static void runTheMainThing(String[] args) throws IOException {
         assert (args.length > 8);
         if (args[1].indexOf(".") == args[1].length() - 4)
             throw new IllegalArgumentException(
@@ -34,10 +42,10 @@ public class ColorSeparation {
     }
 
     public static void separate(String startingName, String endingName, String outFormat, int r1, int g1, int b1,
-            int r2, int g2, int b2, int a2) throws IOException {
+                                int r2, int g2, int b2, int a2) throws IOException {
         BufferedImage first = ImageIO.read(new File(startingName));
-	BufferedImage image = new BufferedImage(first.getWidth(), first.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-	image.getGraphics().drawImage(first, 0, 0, null);
+        BufferedImage image = new BufferedImage(first.getWidth(), first.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        image.getGraphics().drawImage(first, 0, 0, null);
         if (outFormat.equals("jpg")) {// there may be other formats that require this.
             doWithoutAlpha(endingName, outFormat, r1, g1, b1, r2, g2, b2, a2, image);
             // TODO: add a way to custom background when removing alpha
@@ -52,7 +60,7 @@ public class ColorSeparation {
     // 24-bit/pixel format
     // may not work
     public static void doWithoutAlpha(String endingName, String outFormat, int r1, int g1, int b1, int r2, int g2,
-            int b2, int a2, BufferedImage image) throws IOException {
+                                      int b2, int a2, BufferedImage image) throws IOException {
         BufferedImage newBufferedImage = new BufferedImage(image.getWidth(), image.getHeight(),
                 BufferedImage.TYPE_INT_RGB);
         newBufferedImage.createGraphics().drawImage(image, 0, 0, Color.WHITE, null);
@@ -63,11 +71,23 @@ public class ColorSeparation {
     public static BufferedImage alterImage(BufferedImage image, Color test, Color replace) {
         for (int col = 0; col < image.getWidth(); col++) {
             for (int row = 0; row < image.getHeight(); row++) {
-                if (image.getRGB(col, row) == (test.getRGB())){
+                if (image.getRGB(col, row) == (test.getRGB())) {
                     image.setRGB(col, row, replace.getRGB());
                 }
             }
         }
         return image;
+    }
+
+    public static void doTheThing(String startName, String finnishName, HashMap<Color, Color> replacementMap) throws IOException {
+        File start = new File(startName);
+        File out = new File(finnishName);
+        if (out.exists())
+            out.delete();
+        Files.copy(start.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        BufferedImage image = ImageIO.read(out);
+        for (Color key : replacementMap.keySet())
+            image = alterImage(image, key, replacementMap.get(key));
+        ImageIO.write(image, "png", out);
     }
 }
