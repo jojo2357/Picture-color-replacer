@@ -7,12 +7,12 @@ public class TickEvent extends EventBase {
     private static int tickNumber = 0;
     private final int myTickNumber;
 
-    public TickEvent(){
+    public TickEvent() {
         super(EventTypes.TickEvent);
         this.myTickNumber = ++tickNumber;
     }
 
-    protected TickEvent(int tnum){
+    protected TickEvent(int tnum) {
         super(EventTypes.TickEvent);
         this.myTickNumber = tnum;
     }

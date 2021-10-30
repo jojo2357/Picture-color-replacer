@@ -7,6 +7,4 @@ import java.util.ArrayList;
 
 public abstract class BasicMenu extends RenderableObject {
     protected ArrayList<InteractableObject> buttons = new ArrayList<>();
-
-    protected abstract void drawMenu();
 }

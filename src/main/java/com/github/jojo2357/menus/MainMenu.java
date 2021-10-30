@@ -50,11 +50,6 @@ public class MainMenu extends BasicMenu {
     }
 
     @Override
-    protected void drawMenu() {
-        //ScreenManager.renderTexture();
-    }
-
-    @Override
     public void reloadTextures() {
 
     }

@@ -43,8 +43,8 @@ public class ScreenManager {
     public static long window;
     public static MouseInputEvent lastPostedMouseEvent = new MouseInputEvent(), lastMouseEvent = new MouseInputEvent();
     public static KeyInputEvent lastPostedKeyEvent = new KeyInputEvent((char) 0), lastKeyEvent = new KeyInputEvent((char) 0);
-    private static double rot = 0;
-    private static float zoom = 1;
+    private static final double rot = 0;
+    private static final float zoom = 1;
     private static double scrolls = 0;
     private static Texture redX, border;
 
@@ -103,6 +103,10 @@ public class ScreenManager {
         );
     }
 
+    private static void doMouseWheel(double vel) {
+        scrolls += vel;
+    }
+
     public static void setIcon(String path) throws RuntimeException {
         IntBuffer w = memAllocInt(1);
         IntBuffer h = memAllocInt(1);
@@ -133,13 +137,6 @@ public class ScreenManager {
         memFree(comp);
         memFree(h);
         memFree(w);
-    }
-
-    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-        ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
-        buffer.flip();
-        newBuffer.put(buffer);
-        return newBuffer;
     }
 
     /**
@@ -181,8 +178,11 @@ public class ScreenManager {
         return buffer;
     }
 
-    private static void doMouseWheel(double vel) {
-        scrolls += vel;
+    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
+        ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+        buffer.flip();
+        newBuffer.put(buffer);
+        return newBuffer;
     }
 
     public static boolean tick() {
@@ -228,40 +228,8 @@ public class ScreenManager {
         }
     }
 
-    public static void renderTexture(Texture text, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
-        if (EventManager.currentPhase != GameTimes.FIRST_RENDER && EventManager.currentPhase != GameTimes.SECOND_RENDER && EventManager.currentPhase != GameTimes.THIRD_RENDER) {
-            throw new IllegalStateException("attempted to render outside of render phase!");
-        }
-        text.bind();
-        //point = point.add(new Point(text.dimensions.getWidth()/2, text.dimensions.getHeight()/2));
-        double offset = Math.toDegrees(Math.atan(specialDimensions.getHeight() / (double) specialDimensions.getWidth())) - 45;
-        glEnable(GL_TEXTURE_2D);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);
-        glVertex2f((float) zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(1f, 0);
-        glVertex2f((float) zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(1f, -1f);
-        glVertex2f((float) zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(0, -1f);
-        glVertex2f((float) zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY()), windowSize.getHeight()));
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-        /*Point a = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX() - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()  - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
-        Point b = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()   - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY() - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
-        Point c = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()  - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()- ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
-        Point d = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()  - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY() - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
-        System.out.println(a + " " + b + " " + c + " " + d);*/
-    }
-
-    private static float convertToScreenCoord(float pointIn, float dimension) {
-        return (2 * pointIn - dimension) / dimension;
-    }
-
-    private static float myRounder(double in) {
-        if (Math.abs(in) % 1 < 0.01) return (float) Math.floor(in);
-        if (Math.abs(in) % 1 > 0.99) return (float) Math.ceil(in);
-        return (float) in;
+    public static void drawBox(Point topLeft, Point bottomRight, Colors color) {
+        drawBox(topLeft, bottomRight, color.R, color.G, color.B);
     }
 
     public static void drawBox(Point topLeft, Point bottomRight, int r, int g, int b) {
@@ -280,8 +248,8 @@ public class ScreenManager {
         glEnd();
     }
 
-    public static void drawBox(Point topLeft, Point bottomRight, Colors color) {
-        drawBox(topLeft, bottomRight, color.R, color.G, color.B);
+    private static float convertToScreenCoord(float pointIn, float dimension) {
+        return (2 * pointIn - dimension) / dimension;
     }
 
     public static void drawBoxFilled(Point topLeft, Point bottomRight, Colors color) {
@@ -310,6 +278,66 @@ public class ScreenManager {
         renderTexture(text, point, sizeFactor, 0, new Dimensions(text.getWidth(), text.getHeight()));
     }
 
+    public static void renderByteArray(ByteBuffer data, ByteBuffer resetData, int width, int height, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
+        double offset = Math.toDegrees(Math.atan(specialDimensions.getHeight() / (double) specialDimensions.getWidth())) - 45;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        glEnable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(0, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, resetData);
+    }
+
+    public static void renderTexture(Texture text, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
+        if (EventManager.currentPhase != GameTimes.FIRST_RENDER && EventManager.currentPhase != GameTimes.SECOND_RENDER && EventManager.currentPhase != GameTimes.THIRD_RENDER) {
+            throw new IllegalStateException("attempted to render outside of render phase!");
+        }
+        text.bind();
+        //point = point.add(new Point(text.dimensions.getWidth()/2, text.dimensions.getHeight()/2));
+        double offset = Math.toDegrees(Math.atan(specialDimensions.getHeight() / (double) specialDimensions.getWidth())) - 45;
+
+        glEnable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(0, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+        /*Point a = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX() - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()  - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
+        Point b = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()   - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY() - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
+        Point c = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()  - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()- ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
+        Point d = new Point((float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()  - ScreenManager.windowSize.getWidth()) / ScreenManager.windowSize.getWidth(), -(float) myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY() - ScreenManager.windowSize.getHeight()) / ScreenManager.windowSize.getHeight());
+        System.out.println(a + " " + b + " " + c + " " + d);*/
+    }
+
+    private static float myRounder(double in) {
+        if (Math.abs(in) % 1 < 0.01) return (float) Math.floor(in);
+        if (Math.abs(in) % 1 > 0.99) return (float) Math.ceil(in);
+        return (float) in;
+    }
+
+    public static void drawCircle(Point origin, float radius, int refinement, int r, int g, int b, int a) {
+        glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
+        drawCircle(origin, radius, refinement);
+        glColor4f(255, 255, 255, 255);
+    }
+
     public static void drawCircle(Point origin, float radius, int refinement) {
         refinement *= radius;
         double twoPiOnRefinement = Math.PI * 2 / refinement;
@@ -321,19 +349,6 @@ public class ScreenManager {
         glEnd();
     }
 
-    public static void drawCircle(Point origin, float radius, int refinement, int r, int g, int b, int a) {
-        glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
-        drawCircle(origin, radius, refinement);
-        glColor4f(255, 255, 255, 255);
-    }
-
-    public static void drawLine(Point origin, Point destination) {
-        glBegin(GL_LINES);
-        glVertex2f(convertToScreenCoord(origin.getX(), windowSize.getWidth()), -convertToScreenCoord(origin.getY(), windowSize.getHeight()));
-        glVertex2f(convertToScreenCoord(destination.getX(), windowSize.getWidth()), -convertToScreenCoord(destination.getY(), windowSize.getHeight()));
-        glEnd();
-    }
-
     public static void drawLine(Point origin, Point destination, int r, int g, int b) {
         drawLine(origin, destination, r, g, b, 255);
     }
@@ -342,6 +357,13 @@ public class ScreenManager {
         glColor4f(r, g, b, a);
         drawLine(origin, destination);
         glColor4f(255, 255, 255, 255);
+    }
+
+    public static void drawLine(Point origin, Point destination) {
+        glBegin(GL_LINES);
+        glVertex2f(convertToScreenCoord(origin.getX(), windowSize.getWidth()), -convertToScreenCoord(origin.getY(), windowSize.getHeight()));
+        glVertex2f(convertToScreenCoord(destination.getX(), windowSize.getWidth()), -convertToScreenCoord(destination.getY(), windowSize.getHeight()));
+        glEnd();
     }
 
     public static void drawGreenBox() {
@@ -397,17 +419,6 @@ public class ScreenManager {
         renderTextureLimited(text, point, sizeFactor, 0, new Dimensions(text.getWidth(), text.getHeight()), topLeft, size);
     }
 
-    public static void renderTextureLimited(Texture text, Point point, float sizeFactor, Dimensions dimensions, Point topLeft, Dimensions size) {
-        switch (EventManager.currentPhase) {
-            case FIRST_RENDER:
-            case SECOND_RENDER:
-            case THIRD_RENDER:
-                renderTexture(text, point, sizeFactor, 0, dimensions);
-                break;
-            default:
-                throw new IllegalStateException("attempted to render outside of render phase!");
-        }
-    }
     public static void renderTextureLimited(Texture text, Point point, float sizeFactor, double rotation, Dimensions specialDimensions, Point topLeft, Dimensions size) {
         //glViewport(0, 0, size.getWidth() / 2, size.getHeight() / 2);
         //glViewport((int)topLeft.getX(), (int)topLeft.getY(), size.getWidth(), size.getHeight());
@@ -431,13 +442,13 @@ public class ScreenManager {
         glEnable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
         glTexCoord2f(leftCoord, upCoord);
-        glVertex2f((float) zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY())), windowSize.getHeight()));
+        glVertex2f(zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY())), windowSize.getHeight()));
         glTexCoord2f(rightCoord, upCoord);
-        glVertex2f((float) zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY())), windowSize.getHeight()));
+        glVertex2f(zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY())), windowSize.getHeight()));
         glTexCoord2f(rightCoord, downCoord);
-        glVertex2f((float) zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY())), windowSize.getHeight()));
+        glVertex2f(zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY())), windowSize.getHeight()));
         glTexCoord2f(leftCoord, downCoord);
-        glVertex2f((float) zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY())), windowSize.getHeight()));
+        glVertex2f(zoom * convertToScreenCoord(getMiddleValue(leftCoordLimit, rightCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX())), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(getMiddleValue(upCoordLimit, downCoordLimit, myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY())), windowSize.getHeight()));
         glEnd();
         glDisable(GL_TEXTURE_2D);
         //glViewport(0, 0, windowSize.getWidth(), windowSize.getHeight());
@@ -451,5 +462,17 @@ public class ScreenManager {
         if (Math.max(a, b) >= c && c >= Math.min(a, b))
             return c;
         throw new IllegalStateException("This should never happen");
+    }
+
+    public static void renderTextureLimited(Texture text, Point point, float sizeFactor, Dimensions dimensions, Point topLeft, Dimensions size) {
+        switch (EventManager.currentPhase) {
+            case FIRST_RENDER:
+            case SECOND_RENDER:
+            case THIRD_RENDER:
+                renderTexture(text, point, sizeFactor, 0, dimensions);
+                break;
+            default:
+                throw new IllegalStateException("attempted to render outside of render phase!");
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.github.jojo2357.events.EventBase;
 import com.github.jojo2357.events.EventTypes;
 import com.github.jojo2357.events.events.MouseInputEvent;
 import com.github.jojo2357.events.events.RenderEvent;
+import com.github.jojo2357.rendering.ScreenManager;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,6 +21,43 @@ public class Button extends InteractableObject {
         registerListeners(EventTypes.RenderEvent, EventTypes.MouseInputEvent);
     }
 
+    public Button(Point center, Dimensions size,
+                  Function<MouseInputEvent, Boolean> filter,
+                  Function<MouseInputEvent, Boolean> callback,
+                  Consumer<RenderEvent> renderCallback, String filename) {
+        super(center, size, filter, callback, filename);
+        RENDER_CALLBACK = renderCallback;
+        registerListeners(EventTypes.RenderEvent, EventTypes.MouseInputEvent);
+    }
+
+    public Button(Point center,
+                  Function<MouseInputEvent, Boolean> filter,
+                  Function<MouseInputEvent, Boolean> callback,
+                  Consumer<RenderEvent> renderCallback, String filename) {
+        super(center, filter, callback, filename);
+        if (renderCallback == null)
+            RENDER_CALLBACK = this::renderWhenNull;
+        else
+            RENDER_CALLBACK = renderCallback;
+        registerListeners(EventTypes.RenderEvent, EventTypes.MouseInputEvent);
+        super.loadImage(filename);
+    }
+
+    public Button(Point center,
+                  Dimensions size,
+                  Function<MouseInputEvent, Boolean> filter,
+                  Function<MouseInputEvent, Boolean> callback,
+                  Texture image) {
+        super(center, filter, callback);
+        RENDER_CALLBACK = this::renderWhenNull;
+        registerListeners(EventTypes.RenderEvent, EventTypes.MouseInputEvent);
+        super.image = image;
+    }
+
+    private void renderWhenNull(RenderEvent event) {
+        ScreenManager.renderTexture(this.image, super.CENTER, 1, super.SIZE);
+    }
+
     public void render(RenderEvent event) {
         RENDER_CALLBACK.accept(event);
     }
@@ -34,7 +72,7 @@ public class Button extends InteractableObject {
     }
 
     @Override
-    public <T extends EventBase> boolean notify(T event){
+    public <T extends EventBase> boolean notify(T event) {
         if (event instanceof MouseInputEvent)
             return super.notify(event);
         if (event instanceof RenderEvent)

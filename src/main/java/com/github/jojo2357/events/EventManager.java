@@ -25,6 +25,22 @@ public class EventManager {
         configured = true;
     }
 
+    public static <T extends IRecievesEvent> void addListeningObject(T listeningObject, EventTypes eventToListenFor) {
+        if (!registeredListeners.get(eventToListenFor).contains(listeningObject))
+            registeredListeners.get(eventToListenFor).add(listeningObject);
+        else
+            System.out.println("Duplicate " + eventToListenFor.name() + " at index " + registeredListeners.get(eventToListenFor).indexOf(listeningObject));
+    }
+
+    public static <T extends IRecievesEvent> void disposeListener(T listeningObject) {
+        for (EventTypes event : EventTypes.values())
+            registeredListeners.get(event).remove(listeningObject);
+    }
+
+    public static void sendTickEvent() {
+        notify(new TickEvent());
+    }
+
     public static <T extends EventBase> boolean notify(T event) {
         //System.out.println(event.getEventType().getName() + " gotten!");
         if (event instanceof RenderEvent) {
@@ -72,21 +88,5 @@ public class EventManager {
             if (loopsMade > maxLoops)// debug because reasons
                 throw new RuntimeException("Infinite loop?");
         }
-    }
-
-    public static <T extends IRecievesEvent> void addListeningObject(T listeningObject, EventTypes eventToListenFor) {
-        if (!registeredListeners.get(eventToListenFor).contains(listeningObject))
-            registeredListeners.get(eventToListenFor).add(listeningObject);
-        else
-            System.out.println("Duplicate " + eventToListenFor.name() + " at index " + registeredListeners.get(eventToListenFor).indexOf(listeningObject));
-    }
-
-    public static <T extends IRecievesEvent> void disposeListener(T listeningObject) {
-        for (EventTypes event : EventTypes.values())
-            registeredListeners.get(event).remove(listeningObject);
-    }
-
-    public static void sendTickEvent() {
-        notify(new TickEvent());
     }
 }

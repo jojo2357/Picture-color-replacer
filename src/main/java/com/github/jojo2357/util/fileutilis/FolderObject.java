@@ -5,10 +5,10 @@ import com.github.jojo2357.util.Button;
 import java.io.File;
 
 public class FolderObject {
+    private final String displayName;
     public boolean selected = false;
     public File file;
     public Button button;
-    private final String displayName;
 
     public static FolderObject[] fromFiles(File[] files) {
         if (files == null)

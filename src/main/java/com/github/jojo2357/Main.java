@@ -4,7 +4,8 @@ import com.github.jojo2357.events.EventManager;
 import com.github.jojo2357.events.events.RenderEvent;
 import com.github.jojo2357.menus.FileMenu;
 import com.github.jojo2357.menus.MainMenu;
-import com.github.jojo2357.menus.PictureEditorMenu;
+import com.github.jojo2357.menus.PictureEditorManager;
+import com.github.jojo2357.menus.ToolbarMenu;
 import com.github.jojo2357.rendering.ScreenManager;
 import com.github.jojo2357.rendering.typeface.JojoFont;
 
@@ -25,7 +26,8 @@ public class Main {
         int loops = 0;
         MainMenu.createMainMenu();
         FileMenu.createMainMenu();
-        PictureEditorMenu.createMainMenu();
+        PictureEditorManager.createMainMenu();
+        ToolbarMenu.createMainMenu();
         do {
             last = System.currentTimeMillis();
             //loops++;

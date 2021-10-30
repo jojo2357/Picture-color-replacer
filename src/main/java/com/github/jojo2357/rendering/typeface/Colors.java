@@ -14,7 +14,7 @@ public enum Colors {
     public final int G;
     public final int B;
 
-    Colors(String name, int r, int g, int b){
+    Colors(String name, int r, int g, int b) {
         this.name = name;
         this.R = r;
         this.G = g;

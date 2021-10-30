@@ -10,6 +10,10 @@ public class MouseInputEvent extends EventBase {
     private final byte buttonsData;
     private final int mouseKlicks;
 
+    public MouseInputEvent() {
+        this(new Point(0, 0), (byte) 0, 0);
+    }
+
     public MouseInputEvent(Point point, byte mouseButtonData, int klicks) {
         super(EventTypes.MouseInputEvent);
         this.mouseLocation = point;
@@ -24,20 +28,12 @@ public class MouseInputEvent extends EventBase {
         }
     }
 
-    public MouseInputEvent() {
-        this(new Point(0, 0), (byte) 0, 0);
-    }
-
     public byte getRawData() {
         return this.buttonsData;
     }
 
     public Point getPosition() {
         return this.mouseLocation;
-    }
-
-    public boolean getClick(MouseButtons button) {
-        return (buttonsData >> button.ID & 0x1) == 1;
     }
 
     public int wheelClicks() {
@@ -60,12 +56,16 @@ public class MouseInputEvent extends EventBase {
         return justReleased(MouseButtons.LEFT) && mouseLocation.getX() >= ScreenManager.windowSize.getWidth() - 100 && mouseLocation.getY() >= ScreenManager.windowSize.getHeight() - 100;
     }
 
-    public boolean bottomLeftClicked() {
-        return justReleased(MouseButtons.LEFT) && mouseLocation.getX() <= 100 && mouseLocation.getY() >= ScreenManager.windowSize.getHeight() - 100;
-    }
-
     public boolean justReleased(MouseButtons button) {
         return ScreenManager.lastMouseEvent.getClick(button) && !getClick(button);
+    }
+
+    public boolean getClick(MouseButtons button) {
+        return (buttonsData >> button.ID & 0x1) == 1;
+    }
+
+    public boolean bottomLeftClicked() {
+        return justReleased(MouseButtons.LEFT) && mouseLocation.getX() <= 100 && mouseLocation.getY() >= ScreenManager.windowSize.getHeight() - 100;
     }
 
     public enum MouseButtons {

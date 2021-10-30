@@ -33,10 +33,6 @@ public class TextRenderer {
         render(charSequenceToPrint, renderStart.stepX((int) -getStringWidth(charSequenceToPrint)), 1, 1000, colors);
     }
 
-    public static void render(String charSequenceToPrint, Point renderStart, int lineWidth, Colors... colors) {
-        render(charSequenceToPrint, renderStart, 1, lineWidth, colors);
-    }
-
     public static void render(String charSequenceToPrint, Point renderStart, float size, int lineWidth, Colors... colors) {
         int colodex = 0;
         charSequenceToPrint = charSequenceToPrint.toUpperCase();
@@ -61,11 +57,15 @@ public class TextRenderer {
         }
     }
 
-    public static void renderJustified(String charSequenceToPrint, Point heightToPrintAt, int lineWidth, Colors... colors) {
-        render(charSequenceToPrint, heightToPrintAt.stepX((int) Math.round(-getStringWidth(charSequenceToPrint) / 2)), 1, lineWidth, colors);
-    }
-
     private static double getStringWidth(String charSequence) {
         return (charSequence.replace("\b", "").trim().length() - 1) * 9;
+    }
+
+    public static void render(String charSequenceToPrint, Point renderStart, int lineWidth, Colors... colors) {
+        render(charSequenceToPrint, renderStart, 1, lineWidth, colors);
+    }
+
+    public static void renderJustified(String charSequenceToPrint, Point heightToPrintAt, int lineWidth, Colors... colors) {
+        render(charSequenceToPrint, heightToPrintAt.stepX((int) Math.round(-getStringWidth(charSequenceToPrint) / 2)), 1, lineWidth, colors);
     }
 }

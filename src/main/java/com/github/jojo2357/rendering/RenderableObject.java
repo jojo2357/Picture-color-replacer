@@ -19,6 +19,8 @@ public abstract class RenderableObject implements IRecievesEvent, Serializable {
     protected double rotation = 0;
     protected String fileNameUsed;
 
+    public abstract void reloadTextures();
+
     protected RenderableObject() {
 
     }
@@ -39,6 +41,4 @@ public abstract class RenderableObject implements IRecievesEvent, Serializable {
         if (EventManager.currentPhase == GameTimes.SECOND_RENDER)
             ScreenManager.renderTexture(this.image, location, 1, this.rotation, this.imageSize);
     }
-
-    public abstract void reloadTextures();
 }

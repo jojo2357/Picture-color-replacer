@@ -4,7 +4,7 @@ public enum EventTypes {
     EmptyEvent("empty", false),
     MouseInputEvent("mouse_input", true),
     TickEvent("tick", false),
-    RenderEvent("render",true),
+    RenderEvent("render", true),
     KeyInputEvent("key", true);
 
     public final boolean canBeConsumed;

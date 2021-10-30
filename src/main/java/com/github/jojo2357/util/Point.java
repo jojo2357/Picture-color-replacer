@@ -14,10 +14,6 @@ public class Point implements Serializable {
         this(0, 0);
     }
 
-    public Point(Dimensions dims){
-        this(dims.getWidth(), dims.getHeight());
-    }
-
     public Point(int x, int y) {
         this((float) x, (float) y);
     }
@@ -25,6 +21,10 @@ public class Point implements Serializable {
     public Point(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Point(Dimensions dims) {
+        this(dims.getWidth(), dims.getHeight());
     }
 
     public Point(double x, double y) {
@@ -73,13 +73,13 @@ public class Point implements Serializable {
         return this;
     }
 
-    public Point stepX(double stepAmt){
-        this.x += stepAmt;
+    public Point stepY(int stepAmt) {
+        this.y += stepAmt;
         return this;
     }
 
-    public Point stepY(int stepAmt) {
-        this.y += stepAmt;
+    public Point stepX(double stepAmt) {
+        this.x += stepAmt;
         return this;
     }
 
@@ -87,10 +87,6 @@ public class Point implements Serializable {
         this.stepX(xAmt);
         this.stepY(yAmt);
         return this;
-    }
-
-    public Point copy() {
-        return new Point(this.x, this.y);
     }
 
     public boolean isInBoundingBox(Point coordinates, Dimensions buttonDimensions, float correctionFactor) {
@@ -103,15 +99,11 @@ public class Point implements Serializable {
         return this;
     }
 
-    public double distanceFrom(Point otherPosition) {
-        return Math.sqrt(Math.pow(this.x - otherPosition.x, 2) + Math.pow(this.y - otherPosition.y, 2));
-    }
-
     public Point getUpperLeft(Dimensions dims) {
         return new Point(this.x - dims.getWidth() / 2.0, this.y - dims.getHeight() / 2.0);
     }
 
-    public Point getClosest(Point ...points) {
+    public Point getClosest(Point... points) {
         double temp;
         double closest = this.distanceFrom(points[0]);
         Point closestPoint = points[0];
@@ -121,5 +113,13 @@ public class Point implements Serializable {
                 closestPoint = point;
             }
         return closestPoint.copy();
+    }
+
+    public double distanceFrom(Point otherPosition) {
+        return Math.sqrt(Math.pow(this.x - otherPosition.x, 2) + Math.pow(this.y - otherPosition.y, 2));
+    }
+
+    public Point copy() {
+        return new Point(this.x, this.y);
     }
 }

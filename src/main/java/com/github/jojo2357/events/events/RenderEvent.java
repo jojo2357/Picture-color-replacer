@@ -4,7 +4,7 @@ import com.github.jojo2357.events.EventBase;
 import com.github.jojo2357.events.EventTypes;
 
 public class RenderEvent extends EventBase {
-    public RenderEvent(){
+    public RenderEvent() {
         super(EventTypes.RenderEvent);
     }
 

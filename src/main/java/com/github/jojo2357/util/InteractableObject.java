@@ -8,10 +8,10 @@ import com.github.jojo2357.rendering.ScreenManager;
 import java.util.function.Function;
 
 public abstract class InteractableObject extends RenderableObject {
-    private final Point CENTER;
-    private final Dimensions SIZE;
-    private final Function<MouseInputEvent, Boolean> FILTER;
-    private final Function<MouseInputEvent, Boolean> CALLBACK;
+    protected final Point CENTER;
+    protected final Dimensions SIZE;
+    protected final Function<MouseInputEvent, Boolean> FILTER;
+    protected final Function<MouseInputEvent, Boolean> CALLBACK;
 
     public InteractableObject(Point center, Dimensions size, Function<MouseInputEvent, Boolean> filter, Function<MouseInputEvent, Boolean> callback) {
         CENTER = center;
@@ -24,6 +24,21 @@ public abstract class InteractableObject extends RenderableObject {
         super(texture);
         CENTER = center;
         SIZE = size;
+        FILTER = filter;
+        CALLBACK = callback;
+    }
+
+    public InteractableObject(Point center, Function<MouseInputEvent, Boolean> filter, Function<MouseInputEvent, Boolean> callback, String texture) {
+        super(texture);
+        CENTER = center;
+        SIZE = super.imageSize;
+        FILTER = filter;
+        CALLBACK = callback;
+    }
+
+    public InteractableObject(Point center, Function<MouseInputEvent, Boolean> filter, Function<MouseInputEvent, Boolean> callback) {
+        CENTER = center;
+        SIZE = super.imageSize;
         FILTER = filter;
         CALLBACK = callback;
     }

@@ -7,7 +7,7 @@ public enum EventPriorities {
 
     public int id = -1;
 
-    EventPriorities(int id){
+    EventPriorities(int id) {
         this.id = id;
     }
 }
