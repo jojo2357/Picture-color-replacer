@@ -100,7 +100,7 @@ public class FileMenu extends BasicMenu {
     }
 
     private void handleKeys(KeyInputEvent event) {
-        System.out.println("I hear " + (int) event.KEY);
+        //System.out.println("I hear " + (int) event.KEY);
         if (EventManager.currentScreen == OpenScreen.FILE_CHOOSER) {
             if (event.KEY == 256) {
                 EventManager.currentScreen = OpenScreen.MAIN_MENU;

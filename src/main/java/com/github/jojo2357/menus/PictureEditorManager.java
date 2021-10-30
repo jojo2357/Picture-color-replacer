@@ -23,17 +23,24 @@ public class PictureEditorManager extends BasicMenu {
     static int imageIndex = -1;
     private static PictureEditorManager PICTURE_EDITOR;
 
-    private static HashMap<PixelData, PixelData> transformations;
+    private static HashMap<PixelData, PixelData> clipboard;
 
     public static void copyTransformations() {
-        transformations = activeMenu.transformations;
+        clipboard = deepCopy(activeMenu.transformations);
     }
 
     public static void pasteTransformations() {
-        if (transformations != null) {
-            activeMenu.transformations = transformations;
+        if (clipboard != null) {
+            activeMenu.transformations = deepCopy(clipboard);
             activeMenu.updateReplacement();
         }
+    }
+
+    private static HashMap<PixelData, PixelData> deepCopy(HashMap<PixelData, PixelData> template) {
+        final HashMap<PixelData, PixelData> out = new HashMap<>();
+        for (PixelData key : template.keySet())
+            out.put(key.copy(), template.get(key).copy());
+        return out;
     }
 
     public static boolean hasCopyableTransformations() {
@@ -41,7 +48,7 @@ public class PictureEditorManager extends BasicMenu {
     }
 
     public static boolean hasPasteableTransformations() {
-        return activeMenu != null && transformations != null && transformations.keySet().size() > 0 && activeMenu.transformations != transformations;
+        return activeMenu != null && clipboard != null && clipboard.keySet().size() > 0 && !activeMenu.transformations.equals(clipboard);
     }
 
     public static int getNumFiles() {

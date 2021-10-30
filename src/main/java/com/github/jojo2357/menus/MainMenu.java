@@ -2,6 +2,8 @@ package com.github.jojo2357.menus;
 
 import com.github.jojo2357.events.EventBase;
 import com.github.jojo2357.events.EventManager;
+import com.github.jojo2357.events.EventTypes;
+import com.github.jojo2357.events.events.KeyInputEvent;
 import com.github.jojo2357.events.events.MouseInputEvent;
 import com.github.jojo2357.events.events.RenderEvent;
 import com.github.jojo2357.rendering.OpenScreen;
@@ -56,6 +58,11 @@ public class MainMenu extends BasicMenu {
 
     @Override
     public <T extends EventBase> boolean notify(T event) {
+        if (event.getEventType() == EventTypes.KeyInputEvent) {
+            if (((KeyInputEvent) event).KEY == 256) {
+                EventManager.currentScreen = OpenScreen.MAIN_MENU;
+            }
+        }
         return false;
     }
 }

@@ -4,17 +4,9 @@ import com.github.jojo2357.events.EventBase;
 import com.github.jojo2357.events.EventManager;
 import com.github.jojo2357.events.GameTimes;
 import com.github.jojo2357.events.events.MouseInputEvent;
-import com.github.jojo2357.events.events.RenderEvent;
 import com.github.jojo2357.rendering.OpenScreen;
 import com.github.jojo2357.rendering.ScreenManager;
-import com.github.jojo2357.util.Button;
-import com.github.jojo2357.util.Dimensions;
-import com.github.jojo2357.util.InteractableObject;
 import com.github.jojo2357.util.Point;
-import com.github.jojo2357.util.Texture;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
 import static com.github.jojo2357.util.Texture.*;
@@ -22,7 +14,6 @@ import static com.github.jojo2357.util.Texture.*;
 public class ToolbarMenu extends BasicMenu {
     private static final Point buttonSteps = new Point(12, 5);
     private static ToolbarMenu TOOLBAR_MENU;
-    private static Texture panHand = Texture.create("MiscPics/PanHand");
 
     public static ToolbarMenu createMainMenu() {
         if (TOOLBAR_MENU == null)
@@ -75,6 +66,13 @@ public class ToolbarMenu extends BasicMenu {
         else
             ScreenManager.drawBox(new Point(34, 146), new Point(52, 128), 255, 0, 0);
         ScreenManager.renderTexture(paste, new Point(43, 137), 16f / Math.max(paste.getHeight(), paste.getWidth()));
+
+        ScreenManager.drawBoxFilled(new Point(64, 104), new Point(82, 122), 64, 64, 64);
+        if (PictureEditorManager.hasCopyableTransformations())
+            ScreenManager.drawBox(new Point(64, 104), new Point(82, 122), 0, 0, 0);
+        else
+            ScreenManager.drawBox(new Point(64, 104), new Point(82, 122), 255, 0, 0);
+        ScreenManager.renderTexture(trashCan, new Point(73, 113), 16f / Math.max(trashCan.getHeight(), trashCan.getWidth()));
     }
 
     private boolean handleMouseInput(MouseInputEvent event) {
@@ -90,6 +88,11 @@ public class ToolbarMenu extends BasicMenu {
                                 break;
                             case 1:
                                 //save
+                                PictureEditorManager.activeMenu.saveEdits();
+                                break;
+                            case 2:
+                                //trash
+                                PictureEditorManager.activeMenu.resetChanges();
                                 break;
                             default:
                                 return false;

@@ -138,4 +138,13 @@ public class PictureEditorMenu extends RenderableObject {
             updateReplacement(pd, transformations.get(pd));
         }
     }
+
+    public void resetChanges() {
+        transformations.clear();
+        currentImage.resetChanges();
+    }
+
+    public void saveEdits() {
+        currentImage.saveToFile();
+    }
 }
