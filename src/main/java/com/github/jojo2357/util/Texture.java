@@ -33,6 +33,7 @@ public class Texture {
     private static final HashMap<String, Texture> loadedAssets = new HashMap<>();
     public static final Texture redX;
     public static final Texture border;
+    public static final Texture makeMapping;
 
     static {
         load = create("MiscPics/Load");
@@ -47,6 +48,7 @@ public class Texture {
         textT = create("MiscPics/TextT");
         redX = create("MiscPics/redx");
         border = create("Shaders/border");
+        makeMapping = create("MiscPics/makeMapping");
     }
 
     public final int id;

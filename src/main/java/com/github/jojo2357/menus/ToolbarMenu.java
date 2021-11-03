@@ -9,9 +9,11 @@ import com.github.jojo2357.events.events.MouseInputEvent;
 import com.github.jojo2357.imageediting.ImageMenu;
 import com.github.jojo2357.rendering.OpenScreen;
 import com.github.jojo2357.rendering.ScreenManager;
+import com.github.jojo2357.util.PixelData;
 import com.github.jojo2357.util.Point;
 import com.github.jojo2357.util.fileutilis.ImageObject;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
@@ -83,6 +85,11 @@ public class ToolbarMenu extends BasicMenu {
         ScreenManager.drawBoxFilled(new Point(94, 104), new Point(112, 122), 64, 64, 64);
         ScreenManager.drawBox(new Point(94, 104), new Point(112, 122), 0, 0, 0);
         ScreenManager.renderTexture(textT, new Point(103, 113), 16f / Math.max(textT.getHeight(), textT.getWidth()));
+
+        ScreenManager.drawBoxFilled(new Point(64, 146), new Point(82, 128), 64, 64, 64);
+        ScreenManager.drawBox(new Point(64, 146), new Point(82, 128), 0, 0, 0);
+        ScreenManager.renderTexture(makeMapping, new Point(73, 137), 16f / Math.max(makeMapping.getHeight(), makeMapping.getWidth()));
+
     }
 
     private boolean handleMouseInput(MouseInputEvent event) {
@@ -149,7 +156,9 @@ public class ToolbarMenu extends BasicMenu {
                                 //paste
                                 break;
                             case 2:
-
+                                if (PictureEditorManager.activeMenu == null)
+                                    break;
+                                PictureEditorManager.scalpMapping();
                             default:
                                 return false;
                         }

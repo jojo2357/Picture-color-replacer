@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ImageObject extends Texture {
@@ -22,6 +23,20 @@ public class ImageObject extends Texture {
     private byte[] tempOther;
 
     public HashMap<PixelData, PixelData> transformations = new HashMap<>();
+
+    public static HashMap<PixelData, PixelData> generateMapping(ImageObject selectedForMapping, ImageObject image) {
+        if (selectedForMapping.initialData.length != image.initialData.length)
+            return null;
+        final HashMap<PixelData, PixelData> out = new HashMap<>();
+        for (int i = 0; i < selectedForMapping.initialData.length; i += 4) {
+            PixelData temp = new PixelData(selectedForMapping.initialData[i], selectedForMapping.initialData[i + 1], selectedForMapping.initialData[i + 2], selectedForMapping.initialData[i + 3], new Point(i / 4 % selectedForMapping.width, i / 4 / selectedForMapping.width));
+            PixelData tempOther = new PixelData(image.initialData[i], image.initialData[i + 1], image.initialData[i + 2], image.initialData[i + 3], new Point(i / 4 % image.width, i / 4 / image.width));
+            PixelData holder;
+            if ((holder = out.put(temp.copy(), tempOther.copy())) != null && !holder.equals(tempOther))
+                return null;
+        }
+        return out;
+    }
 
     public ImageObject(File file) {
         super(file.getAbsolutePath());
@@ -65,13 +80,15 @@ public class ImageObject extends Texture {
     }
 
     public void updateReplacement() {
-        for (PixelData pd : transformations.keySet()) {
-            updateReplacement(pd, transformations.get(pd));
+        for (Map.Entry<PixelData, PixelData> entry : transformations.entrySet()) {
+            updateReplacement(entry.getKey(), entry.getValue());
         }
     }
 
     public void updateReplacement(PixelData startingData, PixelData finalData) {
         updateCopy(startingData, finalData);
+        if (transformations.containsKey(startingData) && transformations.get(startingData).equals(finalData))
+            return;
         if (!startingData.equals(finalData))
             transformations.put(startingData, finalData);
         else transformations.remove(startingData);
