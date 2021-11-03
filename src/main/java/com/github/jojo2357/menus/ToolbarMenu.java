@@ -2,11 +2,17 @@ package com.github.jojo2357.menus;
 
 import com.github.jojo2357.events.EventBase;
 import com.github.jojo2357.events.EventManager;
+import com.github.jojo2357.events.EventPriorities;
+import com.github.jojo2357.events.EventTypes;
 import com.github.jojo2357.events.GameTimes;
 import com.github.jojo2357.events.events.MouseInputEvent;
+import com.github.jojo2357.imageediting.ImageMenu;
 import com.github.jojo2357.rendering.OpenScreen;
 import com.github.jojo2357.rendering.ScreenManager;
 import com.github.jojo2357.util.Point;
+import com.github.jojo2357.util.fileutilis.ImageObject;
+
+import java.util.List;
 
 import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
 import static com.github.jojo2357.util.Texture.*;
@@ -73,10 +79,16 @@ public class ToolbarMenu extends BasicMenu {
         else
             ScreenManager.drawBox(new Point(64, 104), new Point(82, 122), 255, 0, 0);
         ScreenManager.renderTexture(trashCan, new Point(73, 113), 16f / Math.max(trashCan.getHeight(), trashCan.getWidth()));
+
+        ScreenManager.drawBoxFilled(new Point(94, 104), new Point(112, 122), 64, 64, 64);
+        ScreenManager.drawBox(new Point(94, 104), new Point(112, 122), 0, 0, 0);
+        ScreenManager.renderTexture(textT, new Point(103, 113), 16f / Math.max(textT.getHeight(), textT.getWidth()));
     }
 
     private boolean handleMouseInput(MouseInputEvent event) {
-        if (event.justReleased(LEFT) && event.getPosition().getY() > 100 && event.getPosition().getY() < 150)
+        if (PictureEditorManager.activeMenu != null && PictureEditorManager.activeMenu.wantsMouseControl())
+            return false;
+        if (event.justReleased(LEFT) && event.getPosition().getY() > 100 && event.getPosition().getY() < 150) {
             if ((event.getPosition().getX() - 4) % (20 + buttonSteps.getX()) < 20 && ((event.getPosition().getY() - 104) % (20 + buttonSteps.getY()) < 20)) {
                 Point buttonClicked = new Point((int) ((event.getPosition().getX() - 4) / (20 + buttonSteps.getX())), (int) ((event.getPosition().getY() - 104) / (20 + buttonSteps.getY())));
                 //System.out.println(buttonClicked + " | " + event.getPosition());
@@ -86,13 +98,36 @@ public class ToolbarMenu extends BasicMenu {
                             case 0:
                                 //pan
                                 break;
-                            case 1:
+                            case 1: {
                                 //save
-                                PictureEditorManager.activeMenu.saveEdits();
+                                if (PictureEditorManager.activeMenu == null)
+                                    break;
+                                if (ImageMenu.highlightedObjects.contains(PictureEditorManager.activeMenu.getImage()))
+                                    for (ImageObject image : ImageMenu.highlightedObjects) {
+                                        image.saveToFile(PictureEditorMenu.startingFind, PictureEditorMenu.endingFind);
+                                    }
+                                else
+                                    PictureEditorManager.activeMenu.getImage().saveToFile(PictureEditorMenu.startingFind, PictureEditorMenu.endingFind);
                                 break;
-                            case 2:
+                            }
+                            case 2: {
                                 //trash
+                                if (PictureEditorManager.activeMenu == null)
+                                    break;
+                                if (ImageMenu.highlightedObjects.contains(PictureEditorManager.activeMenu.getImage()))
+                                    for (ImageObject image : ImageMenu.highlightedObjects) {
+                                        image.resetChanges();
+                                    }
+                                else {
+                                    PictureEditorManager.activeMenu.getImage().resetChanges();
+                                }
                                 PictureEditorManager.activeMenu.resetChanges();
+                                break;
+                            }
+                            case 3:
+                                if (PictureEditorManager.activeMenu != null) {
+                                    PictureEditorManager.activeMenu.openTextPopup();
+                                }
                                 break;
                             default:
                                 return false;
@@ -113,6 +148,8 @@ public class ToolbarMenu extends BasicMenu {
                                 } //else System.out.println("No paste");
                                 //paste
                                 break;
+                            case 2:
+
                             default:
                                 return false;
                         }
@@ -122,7 +159,16 @@ public class ToolbarMenu extends BasicMenu {
                 }
                 return true;
             } //else System.out.println(event.getPosition());
+            return true;
+        }
         return false;
+    }
+
+    @Override
+    public EventPriorities getPrio(EventTypes event) {
+        if (event == EventTypes.MouseInputEvent)
+            return EventPriorities.HIGHEST;
+        return super.getPrio(event);
     }
 
     @Override

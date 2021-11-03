@@ -9,7 +9,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class ImageObject extends Texture {
     private final File location;
@@ -17,6 +20,8 @@ public class ImageObject extends Texture {
     public ByteBuffer otherText;
     public ByteBuffer startingData;
     private byte[] tempOther;
+
+    public HashMap<PixelData, PixelData> transformations = new HashMap<>();
 
     public ImageObject(File file) {
         super(file.getAbsolutePath());
@@ -52,10 +57,42 @@ public class ImageObject extends Texture {
     }
 
     public void resetChanges() {
+        transformations.clear();
         tempOther = Arrays.copyOf(initialData, initialData.length);
+        otherText = BufferUtils.createByteBuffer(tempOther.length);
+        otherText.put(tempOther);
+        otherText.flip();
     }
 
-    public boolean saveToFile() {
+    public void updateReplacement() {
+        for (PixelData pd : transformations.keySet()) {
+            updateReplacement(pd, transformations.get(pd));
+        }
+    }
+
+    public void updateReplacement(PixelData startingData, PixelData finalData) {
+        updateCopy(startingData, finalData);
+        if (!startingData.equals(finalData))
+            transformations.put(startingData, finalData);
+        else transformations.remove(startingData);
+    }
+
+    public String getName() {
+        return location.getName();
+    }
+
+    public String getName(String find, String replace) {
+        String out = location.getName();
+        if (find.equals(""))
+            return out;
+        if (!replace.contains(find))
+            while (out.contains(find))
+                out = out.replace(find, replace);
+        else out = out.replace(find, replace);
+        return out;
+    }
+
+    public boolean saveToFile(String startingFind, String endingFind) {
         try {
             BufferedImage image = new BufferedImage(width, super.heigth, BufferedImage.TYPE_INT_ARGB);
             for (int x = 0; x < width; x++) {
@@ -69,9 +106,14 @@ public class ImageObject extends Texture {
                 }
             }
 
-            return ImageIO.write(image, "png", location);
+            return ImageIO.write(image, "png", Paths.get(location.getParent(), getName(startingFind, endingFind)).toFile());
         } catch (Exception e) {
             return false;
         }
     }
+
+    /*@Override
+    public int hashCode() {
+        return Arrays.hashCode(initialData) ^ Arrays.hashCode(tempOther);
+    }*/
 }

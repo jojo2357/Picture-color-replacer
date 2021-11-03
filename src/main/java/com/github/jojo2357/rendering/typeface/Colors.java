@@ -7,7 +7,8 @@ public enum Colors {
     GREEN("green", 0, 255, 0),
     BLUE("blue", 0, 32, 205),
     LIGHT_BLUE("light_blue", 0, 255, 255),
-    ORANGE("orange", 255, 127, 0);
+    ORANGE("orange", 255, 127, 0),
+    GRAY("gray", 128, 128, 128);
 
     public final String name;
     public final int R;

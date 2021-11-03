@@ -19,12 +19,8 @@ public class MouseInputEvent extends EventBase {
         this.mouseLocation = point;
         this.buttonsData = mouseButtonData;
         this.mouseKlicks = klicks;
-        if (mouseButtonData != -1 && ((mouseButtonData & 1) == 1)) {
-            try {
-                //System.out.println(point.copy().multiply(2).subtract(EventManager.map.getMapLocation()).multiply(1f/EventManager.map.getZoomFactor()));
-            } catch (Exception e) {
-
-            }
+        if (mouseButtonData != 0) {
+            //System.out.println(mouseButtonData + ": " + getClick(MouseButtons.LEFT) + ", " + getClick(MouseButtons.MIDDLE) + ", " + getClick(MouseButtons.RIGHT));
         }
     }
 
@@ -60,6 +56,13 @@ public class MouseInputEvent extends EventBase {
         return ScreenManager.lastMouseEvent.getClick(button) && !getClick(button);
     }
 
+    public boolean justReleased() {
+        for (MouseButtons button : MouseButtons.values())
+            if (justReleased(button))
+                return true;
+            return false;
+    }
+
     public boolean getClick(MouseButtons button) {
         return (buttonsData >> button.ID & 0x1) == 1;
     }
@@ -70,8 +73,8 @@ public class MouseInputEvent extends EventBase {
 
     public enum MouseButtons {
         LEFT(0),
-        MIDDLE(1),
-        RIGHT(2);
+        MIDDLE(2),
+        RIGHT(1);
 
         private final int ID;
 

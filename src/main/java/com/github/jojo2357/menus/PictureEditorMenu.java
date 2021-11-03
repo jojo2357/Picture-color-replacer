@@ -6,19 +6,22 @@ import com.github.jojo2357.events.EventPriorities;
 import com.github.jojo2357.events.EventTypes;
 import com.github.jojo2357.events.events.MouseInputEvent;
 import com.github.jojo2357.imageediting.PixelPopUp;
+import com.github.jojo2357.imageediting.TextMappingPopUp;
 import com.github.jojo2357.rendering.OpenScreen;
 import com.github.jojo2357.rendering.RenderableObject;
 import com.github.jojo2357.rendering.ScreenManager;
+import com.github.jojo2357.rendering.typeface.Colors;
+import com.github.jojo2357.rendering.typeface.TextRenderer;
 import com.github.jojo2357.util.Dimensions;
 import com.github.jojo2357.util.PixelData;
 import com.github.jojo2357.util.Point;
 import com.github.jojo2357.util.fileutilis.ImageObject;
 
-import java.util.HashMap;
-
 import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
+import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.RIGHT;
 
 public class PictureEditorMenu extends RenderableObject {
+    public static String startingFind = "", endingFind = "";
     private final ImageObject currentImage;
     private Point translation = new Point(ScreenManager.windowSize.getWidth() / 4, ScreenManager.windowSize.getHeight() / 2);
     private float zoom = 1;
@@ -29,7 +32,11 @@ public class PictureEditorMenu extends RenderableObject {
     private boolean hasActuallyMoved;
     private Point startingPos;
 
-    HashMap<PixelData, PixelData> transformations = new HashMap<>();
+    private TextMappingPopUp child;
+
+    public static void dispose(PictureEditorMenu remove) {
+        if (remove != null) remove.dispose();
+    }
 
     public PictureEditorMenu(ImageObject image) {
         currentImage = image;
@@ -58,6 +65,10 @@ public class PictureEditorMenu extends RenderableObject {
                                 ScreenManager.renderByteArray(currentImage.otherText, currentImage.startingData, currentImage.width, currentImage.heigth, translation.add(new Point(currentImage.width / 2 * zoom + ScreenManager.windowSize.getWidth() / 2, currentImage.heigth / 2 * zoom)), 1, this.rotation, this.adjustedDims);//, new Point(ScreenManager.windowSize.getWidth() / 2, 150), new Dimensions(ScreenManager.windowSize.getWidth() / 2, ScreenManager.windowSize.getHeight() - 150));
                                 //ScreenManager.renderTextureLimited(currentImage.otherText, translation.add(new Point(currentImage.width / 2 * zoom + ScreenManager.windowSize.getWidth() / 2, currentImage.heigth / 2 * zoom)), 1, this.rotation, this.adjustedDims, new Point(ScreenManager.windowSize.getWidth() / 2, 150), new Dimensions(ScreenManager.windowSize.getWidth() / 2, ScreenManager.windowSize.getHeight() - 150));
                                 break;
+                            case SECOND_RENDER:
+                                TextRenderer.renderJustified(currentImage.getName(), new Point(ScreenManager.windowSize.getWidth() / 4, ScreenManager.windowSize.getHeight() - 50), ScreenManager.windowSize.getWidth() / 2, Colors.WHITE);
+                                TextRenderer.renderJustified(currentImage.getName(startingFind, endingFind), new Point(3 * ScreenManager.windowSize.getWidth() / 4, ScreenManager.windowSize.getHeight() - 50), ScreenManager.windowSize.getWidth() / 2, Colors.WHITE);
+                                break;
                         }
                     }
                     break;
@@ -71,7 +82,7 @@ public class PictureEditorMenu extends RenderableObject {
     }
 
     private boolean handleMouseInput(MouseInputEvent event) {
-        if ((isSliding || event.getPosition().getY() > 100)) {
+        if ((isSliding || event.getPosition().getY() > 150)) {
             if (event.wheelClicks() != 0) {
                 //System.out.println("Moving " + event.wheelClicks());
                 float change = Math.max(Math.min((zoom + 1) / PictureEditorManager.MAX_ZOOM * event.wheelClicks() + zoom, PictureEditorManager.MAX_ZOOM), 1.0f) - zoom;
@@ -93,7 +104,7 @@ public class PictureEditorMenu extends RenderableObject {
                 isSliding = true;
                 hasActuallyMoved |= startingPos.distanceFrom(event.getPosition()) > 2;
             } else {
-                if (event.justReleased(LEFT) && !hasActuallyMoved && event.getPosition().isInBoundingBox(translation.add(new Point(adjustedDims).multiply(0.5f)), adjustedDims, 1)) {
+                if (((event.justReleased(LEFT) && !hasActuallyMoved) || event.justReleased(RIGHT)) && event.getPosition().isInBoundingBox(translation.add(new Point(adjustedDims).multiply(0.5f)), adjustedDims, 1)) {
                     if (pop != null)
                         pop.destroy();
                     pop = new PixelPopUp(new PixelData(currentImage.getPixel(getPixelFromScreenCoord(event.getPosition())), getPixelFromScreenCoord(event.getPosition())), new PixelData(currentImage.getFinalPixel(getPixelFromScreenCoord(event.getPosition())), getPixelFromScreenCoord(event.getPosition())), this);
@@ -127,24 +138,27 @@ public class PictureEditorMenu extends RenderableObject {
     }
 
     public void updateReplacement(PixelData startingData, PixelData finalData) {
-        currentImage.updateCopy(startingData, finalData);
-        if (!startingData.equals(finalData))
-            transformations.put(startingData, finalData);
-        else transformations.remove(startingData);
-    }
-
-    public void updateReplacement() {
-        for (PixelData pd : transformations.keySet()) {
-            updateReplacement(pd, transformations.get(pd));
-        }
+        currentImage.updateReplacement(startingData, finalData);
     }
 
     public void resetChanges() {
-        transformations.clear();
-        currentImage.resetChanges();
+        pop.resetChange();
     }
 
-    public void saveEdits() {
-        currentImage.saveToFile();
+    public ImageObject getImage() {
+        return currentImage;
+    }
+
+    public boolean wantsMouseControl() {
+        return isSliding;
+    }
+
+    public void closeTextPopup() {
+        child.dispose();
+        child = null;
+    }
+
+    public void openTextPopup() {
+        child = new TextMappingPopUp(this, startingFind, endingFind);
     }
 }

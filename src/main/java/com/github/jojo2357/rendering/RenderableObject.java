@@ -41,4 +41,8 @@ public abstract class RenderableObject implements IRecievesEvent, Serializable {
         if (EventManager.currentPhase == GameTimes.SECOND_RENDER)
             ScreenManager.renderTexture(this.image, location, 1, this.rotation, this.imageSize);
     }
+
+    public void dispose() {
+        EventManager.disposeListener(this);
+    }
 }

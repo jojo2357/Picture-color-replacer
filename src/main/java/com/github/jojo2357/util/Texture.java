@@ -29,7 +29,10 @@ public class Texture {
     public static final Texture save;
     public static final Texture paste;
     public static final Texture panHand;
+    public static final Texture textT;
     private static final HashMap<String, Texture> loadedAssets = new HashMap<>();
+    public static final Texture redX;
+    public static final Texture border;
 
     static {
         load = create("MiscPics/Load");
@@ -41,6 +44,9 @@ public class Texture {
         save = create("MiscPics/Save");
         paste = create("MiscPics/Paste");
         panHand = create("MiscPics/PanHand");
+        textT = create("MiscPics/TextT");
+        redX = create("MiscPics/redx");
+        border = create("Shaders/border");
     }
 
     public final int id;

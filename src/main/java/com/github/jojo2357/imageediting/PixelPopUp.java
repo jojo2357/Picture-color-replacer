@@ -77,13 +77,13 @@ public class PixelPopUp extends RenderableObject {
 
         for (int i = 1; i <= 6; i++)
             renderArrow(i);
-        /*ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 5), 0.5f);
-        ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 12), 0.5f, 180, Texture.arrow.dimensions);
-        ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 25), 0.5f);
-        ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 32), 0.5f, 180, Texture.arrow.dimensions);
-        ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 45), 0.5f);
-        ScreenManager.renderTexture(Texture.arrow, new Point((int)location.getX() + 80,(int)location.getY() + 52), 0.5f, 180, Texture.arrow.dimensions);
-        */
+        ScreenManager.drawBoxFilled(location.copy().stepX(size.getWidth()), location.copy().step(size.getWidth() + 25, 25), 64, 64, 64);
+        ScreenManager.drawBox(location.copy().stepX(size.getWidth()), location.copy().step(size.getWidth() + 25, 25), 0, 0, 0);
+        ScreenManager.renderTexture(Texture.clipboard, location.copy().step(size.getWidth() + 12, 12), 1, new Dimensions(16, 16));
+
+        ScreenManager.drawBoxFilled(location.copy().step(size.getWidth(), 50), location.copy().step(size.getWidth() + 25, 25), 64, 64, 64);
+        ScreenManager.drawBox(location.copy().step(size.getWidth(), 50), location.copy().step(size.getWidth() + 25, 25), 0, 0, 0);
+        ScreenManager.renderTexture(Texture.paste, location.copy().step(size.getWidth() + 12, 38), 1, new Dimensions(16, 16));
     }
 
     private void drawMyMirror() {
@@ -94,6 +94,10 @@ public class PixelPopUp extends RenderableObject {
         TextRenderer.render("R\b " + " ".repeat(3 - ("" + startingData.getR()).length()) + startingData.getR(), location.copy().add(new Point(10 - size.getWidth(), 10)), 1000, Colors.RED, Colors.WHITE);
         TextRenderer.render("G\b " + " ".repeat(3 - ("" + startingData.getG()).length()) + startingData.getG(), location.copy().add(new Point(10 - size.getWidth(), 30)), 1000, Colors.GREEN, Colors.WHITE);
         TextRenderer.render("B\b " + " ".repeat(3 - ("" + startingData.getB()).length()) + startingData.getB(), location.copy().add(new Point(10 - size.getWidth(), 50)), 1000, Colors.BLUE, Colors.WHITE);
+
+        ScreenManager.drawBoxFilled(location.copy().stepX(-size.getWidth()), location.copy().step(-size.getWidth() - 25, 25), 64, 64, 64);
+        ScreenManager.drawBox(location.copy().stepX(-size.getWidth()), location.copy().step(-size.getWidth() - 25, 25), 0, 0, 0);
+        ScreenManager.renderTexture(Texture.clipboard, location.copy().step(-size.getWidth() - 12, 12), 1, new Dimensions(16, 16));
     }
 
     private void drawMyFirstSelf() {
@@ -103,40 +107,46 @@ public class PixelPopUp extends RenderableObject {
     }
 
     private boolean handleMouseInput(MouseInputEvent event) {
+        if (PictureEditorManager.activeMenu.wantsMouseControl())
+            return false;
         if (event.getPosition().getX() < (int) location.getX() + 88 && event.getPosition().getX() > (int) location.getX() + 73) {
             hoveredArrow = (int) (event.getPosition().getY() - (int) location.getY() + 8) / 10;
-            //System.out.println(hoveredArrow);
-        } else hoveredArrow = -1;
-        if (event.justReleased(LEFT)) {
-            if (hoveredArrow > 0 && hoveredArrow <= 6) {
-                switch (hoveredArrow - 1) {
-                    case 0:
-                        finalData.stepR(1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
-                    case 1:
-                        finalData.stepR(-1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
-                    case 2:
-                        finalData.stepG(1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
-                    case 3:
-                        finalData.stepG(-1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
-                    case 4:
-                        finalData.stepB(1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
-                    case 5:
-                        finalData.stepB(-1);
-                        parent.updateReplacement(startingData, finalData);
-                        break;
+            if (event.justReleased(LEFT)) {
+                if (hoveredArrow > 0 && hoveredArrow <= 6) {
+                    switch (hoveredArrow - 1) {
+                        case 0:
+                        case 1:
+                            finalData.stepR((2 * (hoveredArrow % 2)) - 1);
+                            break;
+                        case 2:
+                        case 3:
+                            finalData.stepG((2 * (hoveredArrow % 2)) - 1);
+                            break;
+                        case 4:
+                        case 5:
+                            finalData.stepB((2 * (hoveredArrow % 2)) - 1);
+                            break;
+                        default: throw new IllegalStateException("This cant happen");
+                    }
+                    parent.updateReplacement(startingData, finalData);
+                }
+            }
+        } else {
+            hoveredArrow = -1;
+            if (event.justReleased(LEFT) && event.getPosition().getY() > 100) {
+                if (event.getPosition().getY() < 125) {
+                    if (event.getPosition().getX() < ScreenManager.windowSize.getWidth() / 2f - size.getWidth() && event.getPosition().getX() > ScreenManager.windowSize.getWidth() / 2f - size.getWidth() - 25) {
+                        PictureEditorManager.clipData(startingData.copy());
+                    } else if (event.getPosition().getX() > ScreenManager.windowSize.getWidth() / 2f + size.getWidth() && event.getPosition().getX() < ScreenManager.windowSize.getWidth() / 2f + size.getWidth() + 25) {
+                        PictureEditorManager.clipData(finalData.copy());
+                    }
+                } else if (event.getPosition().getY() < 150) {
+                    this.finalData = PictureEditorManager.pasteData(startingData);
                 }
             }
         }
+        if (event.getPosition().getY() > 100 && event.getPosition().getY() < 160 && event.getPosition().getX() < ScreenManager.windowSize.getWidth() / 2f + 90 + 25 && event.getPosition().getX() > ScreenManager.windowSize.getWidth() / 2f - 90 - 25)
+            return true;
         return false;
     }
 
@@ -151,7 +161,7 @@ public class PixelPopUp extends RenderableObject {
     @Override
     public EventPriorities getPrio(EventTypes event) {
         if (event == EventTypes.MouseInputEvent) {
-            return EventPriorities.MIDDLE;
+            return EventPriorities.HIGHEST;
         }
         return super.getPrio(event);
     }
@@ -163,5 +173,9 @@ public class PixelPopUp extends RenderableObject {
 
     public void destroy() {
         EventManager.disposeListener(this);
+    }
+
+    public void resetChange() {
+        finalData = startingData.copy();
     }
 }

@@ -26,6 +26,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static java.nio.file.Files.isReadable;
@@ -42,11 +44,11 @@ public class ScreenManager {
     public static Dimensions windowSize = new Dimensions(1000, 700);
     public static long window;
     public static MouseInputEvent lastPostedMouseEvent = new MouseInputEvent(), lastMouseEvent = new MouseInputEvent();
-    public static KeyInputEvent lastPostedKeyEvent = new KeyInputEvent((char) 0), lastKeyEvent = new KeyInputEvent((char) 0);
+    public static KeyInputEvent lastPostedKeyEvent = new KeyInputEvent((char) 0, 0), lastKeyEvent = new KeyInputEvent((char) 0, 0);
+    private static final List<Integer> activeModifiers = new ArrayList<>();
     private static final double rot = 0;
     private static final float zoom = 1;
     private static double scrolls = 0;
-    private static Texture redX, border;
 
     public static void init() {
         GLFWErrorCallback.createPrint(System.err).set();
@@ -67,8 +69,9 @@ public class ScreenManager {
 
         glfwSetKeyCallback(window,
                 (window, key, scancode, action, mods) -> {
+                    KeyInputEvent.updateModifications(mods);
                     if (action == GLFW_PRESS || action == GLFW_REPEAT)
-                        lastKeyEvent = new KeyInputEvent((char) key);
+                        lastKeyEvent = new KeyInputEvent((char) key, mods);
                 }
         );
 
@@ -91,8 +94,6 @@ public class ScreenManager {
         //glClearColor(32 / 255f, 32 / 255f, 32 / 255f, 0);
         glClearColor(1, 1, 1, 0);
         System.out.print("Loading static textures...        \r");
-        redX = Texture.create("MiscPics/redx");
-        border = Texture.create("Shaders/border");
 
         //setIcon("BoatImages/RightFacingBoat");
 
@@ -257,7 +258,11 @@ public class ScreenManager {
     }
 
     public static void drawBoxFilled(Point topLeft, Point bottomRight, int r, int g, int b) {
-        glColor4f(r / 255f, g / 255f, b / 255f, 1f);
+        drawBoxFilled(topLeft, bottomRight, r, g, b, 255);
+    }
+
+    public static void drawBoxFilled(Point topLeft, Point bottomRight, int r, int g, int b, int a) {
+        glColor4f(r / 255f, g / 255f, b / 255f, a / 255f);
         drawStuff(topLeft, bottomRight, GL_TRIANGLE_FAN);
         glColor4f(1f, 1f, 1f, 1f);
     }
@@ -267,7 +272,7 @@ public class ScreenManager {
     }
 
     public static void drawRedX() {
-        renderTexture(redX, new Point(0, windowSize.getHeight()).step(redX.width / 2, -redX.heigth / 2));
+        renderTexture(Texture.redX, new Point(0, windowSize.getHeight()).step(Texture.redX.width / 2, -Texture.redX.heigth / 2));
     }
 
     public static void renderTexture(Texture text, Point point) {
@@ -395,10 +400,10 @@ public class ScreenManager {
     }
 
     public static void drawFadedBorder(int pixelSize) {
-        ScreenManager.renderTexture(border, new Point(ScreenManager.windowSize.getWidth() / 2, ScreenManager.windowSize.getHeight() - pixelSize / 2), 1, new Dimensions(ScreenManager.windowSize.getWidth(), pixelSize));
-        ScreenManager.renderTexture(border, new Point(ScreenManager.windowSize.getWidth() / 2, pixelSize / 2), 1, 180, new Dimensions(ScreenManager.windowSize.getWidth(), pixelSize));
-        ScreenManager.renderTexture(border, new Point(pixelSize / 2, ScreenManager.windowSize.getHeight() / 2), 1, 270, new Dimensions(ScreenManager.windowSize.getHeight(), pixelSize));
-        ScreenManager.renderTexture(border, new Point(ScreenManager.windowSize.getWidth() - pixelSize / 2, ScreenManager.windowSize.getHeight() / 2), 1, 90, new Dimensions(ScreenManager.windowSize.getHeight(), pixelSize));
+        ScreenManager.renderTexture(Texture.border, new Point(ScreenManager.windowSize.getWidth() / 2, ScreenManager.windowSize.getHeight() - pixelSize / 2), 1, new Dimensions(ScreenManager.windowSize.getWidth(), pixelSize));
+        ScreenManager.renderTexture(Texture.border, new Point(ScreenManager.windowSize.getWidth() / 2, pixelSize / 2), 1, 180, new Dimensions(ScreenManager.windowSize.getWidth(), pixelSize));
+        ScreenManager.renderTexture(Texture.border, new Point(pixelSize / 2, ScreenManager.windowSize.getHeight() / 2), 1, 270, new Dimensions(ScreenManager.windowSize.getHeight(), pixelSize));
+        ScreenManager.renderTexture(Texture.border, new Point(ScreenManager.windowSize.getWidth() - pixelSize / 2, ScreenManager.windowSize.getHeight() / 2), 1, 90, new Dimensions(ScreenManager.windowSize.getHeight(), pixelSize));
     }
 
     public static void drawBox(Point topLeft, Point bottomRight) {

@@ -16,24 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PictureEditorManager extends BasicMenu {
-    static final ArrayList<ImageObject> openFiles = new ArrayList<>();
+    public static final ArrayList<ImageObject> openFiles = new ArrayList<>();
     static final float MAX_ZOOM = 32f;
     static final HashMap<ImageObject, PictureEditorMenu> menus = new HashMap<>();
     public static PictureEditorMenu activeMenu;
+    public static ImageObject selectedForMapping;
     static int imageIndex = -1;
     private static PictureEditorManager PICTURE_EDITOR;
-
     private static HashMap<PixelData, PixelData> clipboard;
+    private static PixelData pixelClipboard;
 
     public static void copyTransformations() {
-        clipboard = deepCopy(activeMenu.transformations);
-    }
-
-    public static void pasteTransformations() {
-        if (clipboard != null) {
-            activeMenu.transformations = deepCopy(clipboard);
-            activeMenu.updateReplacement();
-        }
+        clipboard = deepCopy(activeMenu.getImage().transformations);
     }
 
     private static HashMap<PixelData, PixelData> deepCopy(HashMap<PixelData, PixelData> template) {
@@ -43,12 +37,55 @@ public class PictureEditorManager extends BasicMenu {
         return out;
     }
 
+    public static void pasteTransformations() {
+        if (clipboard != null) {
+            if (ImageMenu.highlightedObjects.contains(activeMenu.getImage())) {
+                for (ImageObject image : ImageMenu.highlightedObjects) {
+                    image.transformations = deepCopy(clipboard);
+                    image.updateReplacement();
+                }
+            } else {
+                activeMenu.getImage().transformations = deepCopy(clipboard);
+                activeMenu.getImage().updateReplacement();
+            }
+        }
+    }
+
+    public static void clipData(PixelData data) {
+        pixelClipboard = data;
+    }
+
+    public static PixelData pasteData(PixelData data) {
+        if (pixelClipboard != null) {
+            activeMenu.updateReplacement(data, pixelClipboard);
+            return pixelClipboard.copy();
+        }
+        return data;
+    }
+
+    public static List<PictureEditorMenu> getActiveMenus() {
+        ArrayList<PictureEditorMenu> out = new ArrayList<>();
+        for (ImageObject obj : ImageMenu.highlightedObjects)
+            out.add(menus.get(obj));
+        return out;
+    }
+
+    public static void unloadObject(int index) {
+        if (imageIndex == index) {
+            imageIndex = -1;
+            activeMenu = null;
+        }
+        if (index >= openFiles.size())
+            return;
+        PictureEditorMenu.dispose(menus.remove(openFiles.remove(index)));
+    }
+
     public static boolean hasCopyableTransformations() {
-        return activeMenu != null && activeMenu.transformations.keySet().size() > 0;
+        return activeMenu != null && activeMenu.getImage().transformations.keySet().size() > 0;
     }
 
     public static boolean hasPasteableTransformations() {
-        return activeMenu != null && clipboard != null && clipboard.keySet().size() > 0 && !activeMenu.transformations.equals(clipboard);
+        return activeMenu != null && clipboard != null && clipboard.keySet().size() > 0 && !activeMenu.getImage().transformations.equals(clipboard);
     }
 
     public static int getNumFiles() {
