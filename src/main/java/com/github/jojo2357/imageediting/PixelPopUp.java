@@ -126,7 +126,8 @@ public class PixelPopUp extends RenderableObject {
                         case 5:
                             finalData.stepB((2 * (hoveredArrow % 2)) - 1);
                             break;
-                        default: throw new IllegalStateException("This cant happen");
+                        default:
+                            throw new IllegalStateException("This cant happen");
                     }
                     parent.updateReplacement(startingData, finalData);
                 }
@@ -145,9 +146,7 @@ public class PixelPopUp extends RenderableObject {
                 }
             }
         }
-        if (event.getPosition().getY() > 100 && event.getPosition().getY() < 160 && event.getPosition().getX() < ScreenManager.windowSize.getWidth() / 2f + 90 + 25 && event.getPosition().getX() > ScreenManager.windowSize.getWidth() / 2f - 90 - 25)
-            return true;
-        return false;
+        return event.getPosition().getY() > 100 && event.getPosition().getY() < 160 && event.getPosition().getX() < ScreenManager.windowSize.getWidth() / 2f + 90 + 25 && event.getPosition().getX() > ScreenManager.windowSize.getWidth() / 2f - 90 - 25;
     }
 
     private void renderArrow(int windex) {

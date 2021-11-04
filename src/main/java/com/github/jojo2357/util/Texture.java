@@ -30,10 +30,10 @@ public class Texture {
     public static final Texture paste;
     public static final Texture panHand;
     public static final Texture textT;
-    private static final HashMap<String, Texture> loadedAssets = new HashMap<>();
     public static final Texture redX;
     public static final Texture border;
     public static final Texture makeMapping;
+    private static final HashMap<String, Texture> loadedAssets = new HashMap<>();
 
     static {
         load = create("MiscPics/Load");

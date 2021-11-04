@@ -41,13 +41,13 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class ScreenManager {
     private static final double[] x = new double[1];
     private static final double[] y = new double[1];
+    private static final List<Integer> activeModifiers = new ArrayList<>();
+    private static final double rot = 0;
+    private static final float zoom = 1;
     public static Dimensions windowSize = new Dimensions(1000, 700);
     public static long window;
     public static MouseInputEvent lastPostedMouseEvent = new MouseInputEvent(), lastMouseEvent = new MouseInputEvent();
     public static KeyInputEvent lastPostedKeyEvent = new KeyInputEvent((char) 0, 0), lastKeyEvent = new KeyInputEvent((char) 0, 0);
-    private static final List<Integer> activeModifiers = new ArrayList<>();
-    private static final double rot = 0;
-    private static final float zoom = 1;
     private static double scrolls = 0;
 
     public static void init() {
@@ -283,27 +283,6 @@ public class ScreenManager {
         renderTexture(text, point, sizeFactor, 0, new Dimensions(text.getWidth(), text.getHeight()));
     }
 
-    public static void renderByteArray(ByteBuffer data, ByteBuffer resetData, int width, int height, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
-        double offset = Math.toDegrees(Math.atan(specialDimensions.getHeight() / (double) specialDimensions.getWidth())) - 45;
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-        glEnable(GL_TEXTURE_2D);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);
-        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(1f, 0);
-        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(1f, -1f);
-        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()), windowSize.getHeight()));
-        glTexCoord2f(0, -1f);
-        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY()), windowSize.getHeight()));
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, resetData);
-    }
-
     public static void renderTexture(Texture text, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
         if (EventManager.currentPhase != GameTimes.FIRST_RENDER && EventManager.currentPhase != GameTimes.SECOND_RENDER && EventManager.currentPhase != GameTimes.THIRD_RENDER) {
             throw new IllegalStateException("attempted to render outside of render phase!");
@@ -335,6 +314,27 @@ public class ScreenManager {
         if (Math.abs(in) % 1 < 0.01) return (float) Math.floor(in);
         if (Math.abs(in) % 1 > 0.99) return (float) Math.ceil(in);
         return (float) in;
+    }
+
+    public static void renderByteArray(ByteBuffer data, ByteBuffer resetData, int width, int height, Point point, float sizeFactor, double rotation, Dimensions specialDimensions) {
+        double offset = Math.toDegrees(Math.atan(specialDimensions.getHeight() / (double) specialDimensions.getWidth())) - 45;
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+        glEnable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (-45 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, 0);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (45 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (45 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(1f, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (135 + rotation + offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (135 + rotation + offset)) + point.getY()), windowSize.getHeight()));
+        glTexCoord2f(0, -1f);
+        glVertex2f(zoom * convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.sin((Math.PI / 180.0) * (225 + rotation - offset)) + point.getX()), windowSize.getWidth()), zoom * -(float) convertToScreenCoord(myRounder(sizeFactor * specialDimensions.getDiagonal() * Math.cos((Math.PI / 180.0) * (225 + rotation - offset)) + point.getY()), windowSize.getHeight()));
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, resetData);
     }
 
     public static void drawCircle(Point origin, float radius, int refinement, int r, int g, int b, int a) {

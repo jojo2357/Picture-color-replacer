@@ -43,6 +43,10 @@ public class Button extends InteractableObject {
         super.loadImage(filename);
     }
 
+    private void renderWhenNull(RenderEvent event) {
+        ScreenManager.renderTexture(this.image, super.CENTER, 1, super.SIZE);
+    }
+
     public Button(Point center,
                   Dimensions size,
                   Function<MouseInputEvent, Boolean> filter,
@@ -52,10 +56,6 @@ public class Button extends InteractableObject {
         RENDER_CALLBACK = this::renderWhenNull;
         registerListeners(EventTypes.RenderEvent, EventTypes.MouseInputEvent);
         super.image = image;
-    }
-
-    private void renderWhenNull(RenderEvent event) {
-        ScreenManager.renderTexture(this.image, super.CENTER, 1, super.SIZE);
     }
 
     public void render(RenderEvent event) {

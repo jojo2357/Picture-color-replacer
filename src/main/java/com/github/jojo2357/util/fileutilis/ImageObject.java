@@ -13,16 +13,14 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class ImageObject extends Texture {
     private final File location;
     private final byte[] initialData;
     public ByteBuffer otherText;
     public ByteBuffer startingData;
-    private byte[] tempOther;
-
     public HashMap<PixelData, PixelData> transformations = new HashMap<>();
+    private byte[] tempOther;
 
     public static HashMap<PixelData, PixelData> generateMapping(ImageObject selectedForMapping, ImageObject image) {
         if (selectedForMapping.initialData.length != image.initialData.length)
@@ -32,7 +30,7 @@ public class ImageObject extends Texture {
             PixelData temp = new PixelData(selectedForMapping.initialData[i], selectedForMapping.initialData[i + 1], selectedForMapping.initialData[i + 2], selectedForMapping.initialData[i + 3], new Point(i / 4 % selectedForMapping.width, i / 4 / selectedForMapping.width));
             PixelData tempOther = new PixelData(image.initialData[i], image.initialData[i + 1], image.initialData[i + 2], image.initialData[i + 3], new Point(i / 4 % image.width, i / 4 / image.width));
             PixelData holder;
-            if ((holder = out.put(temp.copy(), tempOther.copy())) != null && !holder.equals(tempOther))
+            if (temp != tempOther && (holder = out.put(temp.copy(), tempOther.copy())) != null && !holder.equals(tempOther))
                 return null;
         }
         return out;
@@ -48,20 +46,6 @@ public class ImageObject extends Texture {
         startingData.put(initialData);
         startingData.flip();
         tempOther = Arrays.copyOf(initialData, initialData.length);
-    }
-
-    public void updateCopy(PixelData find, PixelData replace) {
-        for (int i = 0; i < initialData.length; i += 4) {
-            if ((initialData[i] & 0xFF) == find.getR() && (initialData[i + 1] & 0xFF) == find.getG()
-                    && (initialData[i + 2] & 0xFF) == find.getB()) {
-                tempOther[i] = (byte) replace.getR();
-                tempOther[i + 1] = (byte) replace.getG();
-                tempOther[i + 2] = (byte) replace.getB();
-            }
-        }
-        otherText = BufferUtils.createByteBuffer(tempOther.length);
-        otherText.put(tempOther);
-        otherText.flip();
     }
 
     public int getFinalPixel(Point pixelFromScreenCoord) {
@@ -94,19 +78,22 @@ public class ImageObject extends Texture {
         else transformations.remove(startingData);
     }
 
-    public String getName() {
-        return location.getName();
+    public void updateCopy(PixelData find, PixelData replace) {
+        for (int i = 0; i < initialData.length; i += 4) {
+            if ((initialData[i] & 0xFF) == find.getR() && (initialData[i + 1] & 0xFF) == find.getG()
+                    && (initialData[i + 2] & 0xFF) == find.getB()) {
+                tempOther[i] = (byte) replace.getR();
+                tempOther[i + 1] = (byte) replace.getG();
+                tempOther[i + 2] = (byte) replace.getB();
+            }
+        }
+        otherText = BufferUtils.createByteBuffer(tempOther.length);
+        otherText.put(tempOther);
+        otherText.flip();
     }
 
-    public String getName(String find, String replace) {
-        String out = location.getName();
-        if (find.equals(""))
-            return out;
-        if (!replace.contains(find))
-            while (out.contains(find))
-                out = out.replace(find, replace);
-        else out = out.replace(find, replace);
-        return out;
+    public String getName() {
+        return location.getName();
     }
 
     public boolean saveToFile(String startingFind, String endingFind) {
@@ -127,6 +114,17 @@ public class ImageObject extends Texture {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getName(String find, String replace) {
+        String out = location.getName();
+        if (find.equals(""))
+            return out;
+        if (!replace.contains(find))
+            while (out.contains(find))
+                out = out.replace(find, replace);
+        else out = out.replace(find, replace);
+        return out;
     }
 
     /*@Override

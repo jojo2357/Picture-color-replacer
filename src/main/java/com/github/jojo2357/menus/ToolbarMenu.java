@@ -9,12 +9,8 @@ import com.github.jojo2357.events.events.MouseInputEvent;
 import com.github.jojo2357.imageediting.ImageMenu;
 import com.github.jojo2357.rendering.OpenScreen;
 import com.github.jojo2357.rendering.ScreenManager;
-import com.github.jojo2357.util.PixelData;
 import com.github.jojo2357.util.Point;
 import com.github.jojo2357.util.fileutilis.ImageObject;
-
-import java.util.HashMap;
-import java.util.List;
 
 import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
 import static com.github.jojo2357.util.Texture.*;

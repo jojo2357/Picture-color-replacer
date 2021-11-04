@@ -56,15 +56,15 @@ public class MouseInputEvent extends EventBase {
         return ScreenManager.lastMouseEvent.getClick(button) && !getClick(button);
     }
 
+    public boolean getClick(MouseButtons button) {
+        return (buttonsData >> button.ID & 0x1) == 1;
+    }
+
     public boolean justReleased() {
         for (MouseButtons button : MouseButtons.values())
             if (justReleased(button))
                 return true;
-            return false;
-    }
-
-    public boolean getClick(MouseButtons button) {
-        return (buttonsData >> button.ID & 0x1) == 1;
+        return false;
     }
 
     public boolean bottomLeftClicked() {

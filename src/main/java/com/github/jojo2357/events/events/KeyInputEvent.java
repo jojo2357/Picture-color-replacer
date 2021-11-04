@@ -10,14 +10,6 @@ public class KeyInputEvent extends EventBase {
 
     private static int lastModifications = 0;
 
-    public static void updateModifications(int newMods){
-        lastModifications = newMods;
-    }
-
-    public static boolean hasStoredModification(MODIFICATIONS mod) {
-        return MODIFICATIONS.bitfieldHasMod(lastModifications, mod);
-    }
-
     static {
         mapping = new HashMap<>();
         mapping.put('`', '~');
@@ -45,6 +37,14 @@ public class KeyInputEvent extends EventBase {
 
     public final char KEY;
     private final int mods;
+
+    public static void updateModifications(int newMods) {
+        lastModifications = newMods;
+    }
+
+    public static boolean hasStoredModification(MODIFICATIONS mod) {
+        return MODIFICATIONS.bitfieldHasMod(lastModifications, mod);
+    }
 
     public KeyInputEvent(char pressed, int modifications) {
         super(EventTypes.KeyInputEvent);
@@ -74,11 +74,11 @@ public class KeyInputEvent extends EventBase {
         return this;
     }
 
-    public static enum MODIFICATIONS {
+    public enum MODIFICATIONS {
         NONE, SHIFT, CTRL, ALT;
 
         public static boolean bitfieldOnlyHasMod(int bitfield, MODIFICATIONS mod) {
-            return bitfieldHasMod(bitfield, mod) && ((1 << (mod.ordinal() - 1)) ^ bitfield) == 1 << (mod.ordinal() - 1);
+            return bitfieldHasMod(bitfield, mod) && ((bitfield | (1 << mod.ordinal() - 1)) ^ (1 << mod.ordinal() - 1)) == 0;
         }
 
         public static boolean bitfieldHasMod(int bitfield, MODIFICATIONS mod) {

@@ -10,13 +10,13 @@ import com.github.jojo2357.util.fileutilis.ImageObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.*;
+import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.LEFT;
+import static com.github.jojo2357.events.events.MouseInputEvent.MouseButtons.RIGHT;
 
 public class ImageMenu {
+    public static final List<ImageObject> highlightedObjects = new ArrayList<>();
     private static float imageMenuIndex, mouseDragOffset, startingIndex;
     private static boolean isDragging = false, hasActuallyMoved = false;
-
-    public static final List<ImageObject> highlightedObjects = new ArrayList<>();
 
     public static void renderOtherImages(List<ImageObject> images) {
         ScreenManager.drawBoxFilled(new Point(1, 1), new Point(ScreenManager.windowSize.getWidth(), 100), 128, 128, 128);
@@ -49,7 +49,7 @@ public class ImageMenu {
         } else {
             if (!hasActuallyMoved && event.getPosition().getY() >= 10 && event.getPosition().getY() <= 90 && event.justReleased(LEFT)) {
                 if ((event.getPosition().getX() / 100 + imageMenuIndex) % 1 >= 0.1 && (event.getPosition().getX() / 100 + imageMenuIndex) % 1 <= 0.9 && (int) (event.getPosition().getX() / 100 + imageMenuIndex) < PictureEditorManager.openFiles.size()) {
-                    if (KeyInputEvent.hasStoredModification(KeyInputEvent.MODIFICATIONS.CTRL)){
+                    if (KeyInputEvent.hasStoredModification(KeyInputEvent.MODIFICATIONS.CTRL)) {
                         PictureEditorManager.unloadObject((int) (event.getPosition().getX() / 100 + imageMenuIndex));
                     } else
                         PictureEditorManager.changeSelection((int) (event.getPosition().getX() / 100 + imageMenuIndex));
@@ -63,7 +63,7 @@ public class ImageMenu {
                 imageMenuIndex += change;
             }
         }
-        if (event.justReleased(RIGHT)){
+        if (event.justReleased(RIGHT)) {
             if ((event.getPosition().getX() / 100 + imageMenuIndex) % 1 >= 0.1 && (event.getPosition().getX() / 100 + imageMenuIndex) % 1 <= 0.9 && (int) (event.getPosition().getX() / 100 + imageMenuIndex) < PictureEditorManager.openFiles.size())
                 if (highlightedObjects.contains(PictureEditorManager.openFiles.get((int) (event.getPosition().getX() / 100 + imageMenuIndex))))
                     highlightedObjects.remove(PictureEditorManager.openFiles.get((int) (event.getPosition().getX() / 100 + imageMenuIndex)));

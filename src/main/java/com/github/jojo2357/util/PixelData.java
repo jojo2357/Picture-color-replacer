@@ -4,7 +4,10 @@ import java.util.Objects;
 
 public class PixelData {
     public final Point imageLocation;
-    private byte r, g, b, a;
+    private byte r;
+    private byte g;
+    private byte b;
+    private final byte a;
 
     public PixelData(int rgba, Point imageLocation) {
         this((rgba >> 24) & 0xFF, (rgba >> 16) & 0xFF, (rgba >> 8) & 0xFF, rgba & 0xFF, imageLocation);
@@ -20,27 +23,6 @@ public class PixelData {
         this.b = b;
         this.a = a;
         this.imageLocation = imageLocation;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("(%d, %d, %d, %d) @ (%d, %d)", getR(), getG(), getB(), getA(), (int) imageLocation.getX(), (int) imageLocation.getY());
-    }
-
-    public int getR() {
-        return r & 0xFF;
-    }
-
-    public int getG() {
-        return g & 0xFF;
-    }
-
-    public int getB() {
-        return b & 0xFF;
-    }
-
-    public int getA() {
-        return a & 0xFF;
     }
 
     public void stepR(int i) {
@@ -62,6 +44,7 @@ public class PixelData {
             ;//pass
         else g += i;
     }
+
     public void stepB(int i) {
         if (getB() == 0xFF && i > 0)
             ;//pass
@@ -82,5 +65,26 @@ public class PixelData {
             return other.r == r && other.g == g && other.b == b;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%d, %d, %d, %d) @ (%d, %d)", getR(), getG(), getB(), getA(), (int) imageLocation.getX(), (int) imageLocation.getY());
+    }
+
+    public int getR() {
+        return r & 0xFF;
+    }
+
+    public int getG() {
+        return g & 0xFF;
+    }
+
+    public int getB() {
+        return b & 0xFF;
+    }
+
+    public int getA() {
+        return a & 0xFF;
     }
 }

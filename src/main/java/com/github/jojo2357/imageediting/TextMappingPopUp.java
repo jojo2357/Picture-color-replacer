@@ -23,7 +23,7 @@ import static com.github.jojo2357.rendering.typeface.Colors.WHITE;
 public class TextMappingPopUp extends RenderableObject {
     private static final Dimensions size = new Dimensions(300, 75);
     public String starting, ending;
-    private PictureEditorMenu parent;
+    private final PictureEditorMenu parent;
     private boolean editingTop = true, editingBottom = false;
     private int topCursor, bottomCursor;
     private boolean burnedClick = false;
@@ -60,22 +60,24 @@ public class TextMappingPopUp extends RenderableObject {
             case MouseInputEvent:
                 return handleMouseInput((MouseInputEvent) event);
             case KeyInputEvent:
-                if ((((KeyInputEvent) event).KEY >= 'A' && ((KeyInputEvent) event).KEY <= 'Z') ||
-                        (((KeyInputEvent) event).KEY >= '0' && ((KeyInputEvent) event).KEY <= '9') ||
-                        (((KeyInputEvent) event).KEY >= ' ' && ((KeyInputEvent) event).KEY <= 'Z'))
-                    return false;
-                System.out.println((int) ((KeyInputEvent) event).KEY);
+                /*if (((KeyInputEvent) event).KEY >= ' ' && ((KeyInputEvent) event).KEY <= 127)
+                    return false;*/
                 String beginning = editingTop ? starting : ending;
                 final String beginningImmuted = beginning;
                 //System.out.println("1. " + starting + " | " + ending + " | " + beginning);
-                switch(((KeyInputEvent) event).KEY){
+                switch (((KeyInputEvent) event).KEY) {
                     case 259:
                         if (beginning.length() > 0) {
                             beginning = beginning.substring(0, (editingTop ? topCursor : bottomCursor) - 1) + beginning.substring((editingTop ? topCursor : bottomCursor));
                             if (editingTop)
                                 topCursor = Math.max(topCursor - 1, 0);
                             else if (editingBottom)
-                                bottomCursor = Math.max(bottomCursor-1, 0);
+                                bottomCursor = Math.max(bottomCursor - 1, 0);
+                        }
+                        break;
+                    case 261:
+                        if (beginning.length() > (editingTop ? topCursor : bottomCursor)) {
+                            beginning = beginning.substring(0, (editingTop ? topCursor : bottomCursor)) + beginning.substring((editingTop ? topCursor : bottomCursor) + 1);
                         }
                         break;
                     case 263:
@@ -98,17 +100,23 @@ public class TextMappingPopUp extends RenderableObject {
                         if (editingBottom)
                             editingBottom = !(editingTop = true);
                         break;
+                    case 257:
                     case 335:
                         parent.closeTextPopup();
                         return true;
+                    case 258:
+                    case 340:
                     case 342:
                         break;
                     default:
-                        if (editingTop)
-                            topCursor++;
-                        else if (editingBottom)
-                            bottomCursor++;
-                        beginning = beginning + ((KeyInputEvent) event).KEY;
+                        if (isTextChar(((KeyInputEvent) event).KEY)) {
+                            if (editingTop)
+                                topCursor++;
+                            else if (editingBottom)
+                                bottomCursor++;
+                            beginning = beginning + ((KeyInputEvent) event).KEY;
+                        } else
+                            System.out.println((int) ((KeyInputEvent) event).KEY + " | " + ((KeyInputEvent) event).KEY);
                 }
                 //System.out.println("2. " + starting + " | " + ending + " | " + beginning);
                 if (!beginningImmuted.equals(beginning) && isValidPath(parent.getImage().getName(editingTop ? beginning : starting, editingBottom ? beginning : ending))) {
@@ -131,12 +139,12 @@ public class TextMappingPopUp extends RenderableObject {
             parent.closeTextPopup();
             return false;
         } else {
-            if (event.getPosition().isInBoundingBox(new Point(ScreenManager.windowSize.multiply(0.5f)), size, 1)) {
-
-                return true;
-            }
+            return event.getPosition().isInBoundingBox(new Point(ScreenManager.windowSize.multiply(0.5f)), size, 1);
         }
-        return false;
+    }
+
+    private static boolean isTextChar(char charin) {
+        return charin >= 32 && charin <= 126;
     }
 
     public static boolean isValidPath(String path) {

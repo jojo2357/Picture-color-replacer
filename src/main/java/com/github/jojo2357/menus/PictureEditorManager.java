@@ -30,13 +30,20 @@ public class PictureEditorManager extends BasicMenu {
         clipboard = deepCopy(activeMenu.getImage().transformations);
     }
 
+    private static HashMap<PixelData, PixelData> deepCopy(HashMap<PixelData, PixelData> template) {
+        final HashMap<PixelData, PixelData> out = new HashMap<>();
+        for (PixelData key : template.keySet())
+            out.put(key.copy(), template.get(key).copy());
+        return out;
+    }
+
     public static void scalpMapping() {
         if (selectedForMapping == null) {
             selectedForMapping = activeMenu.getImage();
         } else {
             if (selectedForMapping != activeMenu.getImage()) {
                 HashMap<PixelData, PixelData> temp = ImageObject.generateMapping(selectedForMapping, PictureEditorManager.activeMenu.getImage());
-                if (temp == null){
+                if (temp == null) {
                     System.out.println("Something went wrong mapping");
                 } else {
                     clipboard = temp;
@@ -44,13 +51,6 @@ public class PictureEditorManager extends BasicMenu {
                 selectedForMapping = null;
             }
         }
-    }
-
-    private static HashMap<PixelData, PixelData> deepCopy(HashMap<PixelData, PixelData> template) {
-        final HashMap<PixelData, PixelData> out = new HashMap<>();
-        for (PixelData key : template.keySet())
-            out.put(key.copy(), template.get(key).copy());
-        return out;
     }
 
     public static void pasteTransformations() {
