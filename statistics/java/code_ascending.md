@@ -18,7 +18,7 @@
 |[FontCharacter.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Frendering%2Ftypeface%2FFontCharacter.java)|37 (1.1%)|29|78.4%|0|0.0%|8|21.6%|
 |[FolderObject.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Futil%2Ffileutilis%2FFolderObject.java)|43 (1.3%)|35|81.4%|0|0.0%|8|18.6%|
 |[RenderableObject.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Frendering%2FRenderableObject.java)|48 (1.5%)|37|77.1%|0|0.0%|11|22.9%|
-|[Main.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2FMain.java)|57 (1.8%)|43|75.4%|11|19.3%|3|5.3%|
+|[Main.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2FMain.java)|57 (1.7%)|43|75.4%|11|19.3%|3|5.3%|
 |[Logger.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Futil%2FLogger.java)|54 (1.7%)|46|85.2%|0|0.0%|8|14.8%|
 |[InteractableObject.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Futil%2FInteractableObject.java)|63 (1.9%)|53|84.1%|0|0.0%|10|15.9%|
 |[MainMenu.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fmenus%2FMainMenu.java)|68 (2.1%)|60|88.2%|0|0.0%|8|11.8%|
@@ -37,8 +37,8 @@
 |[TextMappingPopUp.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fimageediting%2FTextMappingPopUp.java)|168 (5.2%)|148|88.1%|5|3.0%|15|8.9%|
 |[PictureEditorManager.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fmenus%2FPictureEditorManager.java)|182 (5.6%)|156|85.7%|1|0.5%|25|13.7%|
 |[ToolbarMenu.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fmenus%2FToolbarMenu.java)|183 (5.6%)|157|85.8%|7|3.8%|19|10.4%|
-|[PixelPopUp.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fimageediting%2FPixelPopUp.java)|180 (5.5%)|159|88.3%|2|1.1%|19|10.6%|
+|[PixelPopUp.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Fimageediting%2FPixelPopUp.java)|188 (5.8%)|166|88.3%|2|1.1%|20|10.6%|
 |[Texture.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Futil%2FTexture.java)|222 (6.8%)|188|84.7%|2|0.9%|32|14.4%|
-|[ScreenManager.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Frendering%2FScreenManager.java)|483 (14.9%)|387|80.1%|23|4.8%|73|15.1%|
-|Average |83.3|69.5|X|1.9|X|11.9|X|
-|Total (39)|3250|2711|83.4%|74| 2.3%|465|14.3%|
+|[ScreenManager.java](https://github.com/jojo2357/Picture-color-replacer/tree/master/src%2Fmain%2Fjava%2Fcom%2Fgithub%2Fjojo2357%2Frendering%2FScreenManager.java)|483 (14.8%)|387|80.1%|23|4.8%|73|15.1%|
+|Average |83.5|69.7|X|1.9|X|11.9|X|
+|Total (39)|3258|2718|83.4%|74| 2.3%|466|14.3%|
