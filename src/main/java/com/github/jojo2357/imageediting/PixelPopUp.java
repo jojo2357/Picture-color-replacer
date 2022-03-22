@@ -66,14 +66,22 @@ public class PixelPopUp extends RenderableObject {
         return false;
     }
 
+    private static String repeat(String in, int count) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            out.append(in);
+        }
+        return out.toString();
+    }
+
     private void drawMyself() {
         ScreenManager.drawBoxFilled(location, location.add(new Point(size)), 128, 128, 128);
         ScreenManager.drawBox(location, location.add(new Point(size)), 0, 0, 0);
         ScreenManager.drawBoxFilled(location.copy().step(2, 2), location.copy().step(17, size.getHeight() - 3), finalData.getR(), finalData.getG(), finalData.getB());
         ScreenManager.drawBox(location.copy().step(2, 2), location.copy().step(17, size.getHeight() - 3), 0, 0, 0);
-        TextRenderer.render("R\b " + " ".repeat(3 - ("" + finalData.getR()).length()) + finalData.getR(), location.add(new Point(25, 10)), 1000, Colors.RED, Colors.WHITE);
-        TextRenderer.render("G\b " + " ".repeat(3 - ("" + finalData.getG()).length()) + finalData.getG(), location.add(new Point(25, 30)), 1000, Colors.GREEN, Colors.WHITE);
-        TextRenderer.render("B\b " + " ".repeat(3 - ("" + finalData.getB()).length()) + finalData.getB(), location.add(new Point(25, 50)), 1000, Colors.BLUE, Colors.WHITE);
+        TextRenderer.render("R\b " + repeat(" ", 3 - ("" + finalData.getR()).length()) + finalData.getR(), location.add(new Point(25, 10)), 1000, Colors.RED, Colors.WHITE);
+        TextRenderer.render("G\b " + repeat(" ", 3 - ("" + finalData.getG()).length()) + finalData.getG(), location.add(new Point(25, 30)), 1000, Colors.GREEN, Colors.WHITE);
+        TextRenderer.render("B\b " + repeat(" ", 3 - ("" + finalData.getB()).length()) + finalData.getB(), location.add(new Point(25, 50)), 1000, Colors.BLUE, Colors.WHITE);
 
         for (int i = 1; i <= 6; i++)
             renderArrow(i);
@@ -91,9 +99,9 @@ public class PixelPopUp extends RenderableObject {
         ScreenManager.drawBox(location, location.copy().step(-size.getWidth(), size.getHeight()), 0, 0, 0);
         ScreenManager.drawBoxFilled(location.copy().step(-2, 2), location.copy().step(-17, size.getHeight() - 3), startingData.getR(), startingData.getG(), startingData.getB());
         ScreenManager.drawBox(location.copy().step(-2, 2), location.copy().step(-17, size.getHeight() - 3), 0, 0, 0);
-        TextRenderer.render("R\b " + " ".repeat(3 - ("" + startingData.getR()).length()) + startingData.getR(), location.copy().add(new Point(10 - size.getWidth(), 10)), 1000, Colors.RED, Colors.WHITE);
-        TextRenderer.render("G\b " + " ".repeat(3 - ("" + startingData.getG()).length()) + startingData.getG(), location.copy().add(new Point(10 - size.getWidth(), 30)), 1000, Colors.GREEN, Colors.WHITE);
-        TextRenderer.render("B\b " + " ".repeat(3 - ("" + startingData.getB()).length()) + startingData.getB(), location.copy().add(new Point(10 - size.getWidth(), 50)), 1000, Colors.BLUE, Colors.WHITE);
+        TextRenderer.render("R\b " + repeat(" ", 3 - ("" + startingData.getR()).length()) + startingData.getR(), location.copy().add(new Point(10 - size.getWidth(), 10)), 1000, Colors.RED, Colors.WHITE);
+        TextRenderer.render("G\b " + repeat(" ", 3 - ("" + startingData.getG()).length()) + startingData.getG(), location.copy().add(new Point(10 - size.getWidth(), 30)), 1000, Colors.GREEN, Colors.WHITE);
+        TextRenderer.render("B\b " + repeat(" ", 3 - ("" + startingData.getB()).length()) + startingData.getB(), location.copy().add(new Point(10 - size.getWidth(), 50)), 1000, Colors.BLUE, Colors.WHITE);
 
         ScreenManager.drawBoxFilled(location.copy().stepX(-size.getWidth()), location.copy().step(-size.getWidth() - 25, 25), 64, 64, 64);
         ScreenManager.drawBox(location.copy().stepX(-size.getWidth()), location.copy().step(-size.getWidth() - 25, 25), 0, 0, 0);

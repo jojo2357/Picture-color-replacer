@@ -48,7 +48,7 @@ public class Texture {
         textT = create("MiscPics/TextT");
         redX = create("MiscPics/redx");
         border = create("Shaders/border");
-        makeMapping = create("MiscPics/makeMapping");
+        makeMapping = create("MiscPics/MakeMapping");
     }
 
     public final int id;

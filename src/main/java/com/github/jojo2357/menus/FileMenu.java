@@ -23,7 +23,7 @@ public class FileMenu extends BasicMenu {
     private static final int tileSpacing = 5;
     private static FileMenu FILE_MENU;
     private int index = 0;
-    private String cwd = "C:\\Users\\Joey\\Documents\\GitHub\\Picture-color-replacer";
+    private String cwd = System.getProperty("user.dir");
 
     private FileObject[] files;
     private FolderObject[] folders;
